@@ -4,11 +4,12 @@ import java.util.Map;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
-
 import frc.robot.Robot;
+import frc.robot.subsystems.Hardware;
 
 /**
  * The class that all tabs derive from.
@@ -84,17 +85,42 @@ class PreMatchTab extends DashboardTab {
 
 }
 
-class AutoTab extends DashboardTab {
+/**
+ * The base class for AutoTab and TeleOpTab.
+ * 
+ * It contains the basic widgets in both tabs such as subsystems, times, etc.
+ */
+abstract class HardwareTab extends DashboardTab {
     private SimpleWidget robotTime;
 
     @Override
     void init(Robot robot) {
-        robotTime = tab.add("Robot Time", Long.toString(robot.getRobotTime())).withSize(2, 1).withPosition(0, 0);
+        var subsystemLayout = tab.getLayout("Subsystems", BuiltInLayouts.kList).withSize(4, 4).withPosition(0, 0);
+
+        robot.getHardware().getSubsystems().forEach(subsystem -> {
+            subsystemLayout.add(subsystem.getName(), subsystem);
+        });
+
+        tab.add("Drive", Hardware.drivetrain.getDrive()).withPosition(4, 0).withSize(3, 3);
+        robotTime = tab.add("Robot Time", Long.toString(robot.getRobotTime())).withPosition(4, 3).withSize(3, 1);
     }
 
     @Override
     void update(Robot robot) {
         robotTime.getEntry().setString(Long.toString(robot.getRobotTime()));
+    }
+}
+
+class AutoTab extends HardwareTab {
+
+    @Override
+    void init(Robot robot) {
+        super.init(robot);
+    }
+
+    @Override
+    void update(Robot robot) {
+        super.update(robot);
     }
 
     @Override
@@ -103,17 +129,16 @@ class AutoTab extends DashboardTab {
     }
 }
 
-class TeleOpTab extends DashboardTab {
-    private SimpleWidget robotTime;
+class TeleOpTab extends HardwareTab {
 
     @Override
     void init(Robot robot) {
-        robotTime = tab.add("Robot Time", Long.toString(robot.getRobotTime())).withSize(2, 1).withPosition(0, 0);
+        super.init(robot);
     }
 
     @Override
     void update(Robot robot) {
-        robotTime.getEntry().setString(Long.toString(robot.getRobotTime()));
+        super.update(robot);
     }
 
     @Override

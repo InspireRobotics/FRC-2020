@@ -4,8 +4,10 @@ import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 
 import edu.wpi.first.wpilibj.TimedRobot;
-
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.command.TimeDriveCommand;
 import frc.robot.dashboard.Dashboard;
+import frc.robot.subsystems.Hardware;
 
 /**
  * The main class for the program. This manages the commands, dashboard, and
@@ -20,6 +22,8 @@ public class Robot extends TimedRobot {
      * is disabled.
      */
     private LocalTime startTime = LocalTime.now();
+
+    private Hardware hardware;
     private Dashboard dashboard;
 
     @Override
@@ -27,6 +31,10 @@ public class Robot extends TimedRobot {
         System.out.println("Robot Init!");
 
         resetTime();
+
+        hardware = new Hardware();
+        hardware.init(this);
+        hardware.disable();
 
         dashboard = new Dashboard(this);
     }
@@ -42,11 +50,14 @@ public class Robot extends TimedRobot {
 
         dashboard.autonomousInit();
         resetTime();
+
+        CommandScheduler.getInstance().cancelAll();
+        CommandScheduler.getInstance().schedule(new TimeDriveCommand(5));
     }
 
     @Override
     public void autonomousPeriodic() {
-
+        CommandScheduler.getInstance().run();
     }
 
     @Override
@@ -55,22 +66,28 @@ public class Robot extends TimedRobot {
 
         dashboard.teleopInit();
         resetTime();
+
+        CommandScheduler.getInstance().cancelAll();
+
     }
 
     @Override
     public void teleopPeriodic() {
-        super.teleopPeriodic();
+        CommandScheduler.getInstance().run();
     }
 
     @Override
     public void disabledInit() {
         System.out.println("Robot Disabled!");
         resetTime();
+
+        hardware.disable();
+        CommandScheduler.getInstance().cancelAll();
     }
 
     @Override
     public void disabledPeriodic() {
-
+        CommandScheduler.getInstance().run();
     }
 
     /**
@@ -86,5 +103,19 @@ public class Robot extends TimedRobot {
      */
     public long getRobotTime() {
         return ChronoUnit.SECONDS.between(startTime, LocalTime.now());
+    }
+
+    /**
+     * @see frc.robot.dashboard.Dashboard
+     */
+    public Dashboard getDashboard() {
+        return dashboard;
+    }
+
+    /**
+     * @see frc.robot.subsystems.Hardware
+     */
+    public Hardware getHardware() {
+        return hardware;
     }
 }
