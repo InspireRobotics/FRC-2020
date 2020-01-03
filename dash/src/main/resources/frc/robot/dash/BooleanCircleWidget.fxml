@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.StackPane?>
+<StackPane xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="frc.robot.dash.BooleanCircle"
+           fx:id="root"
+           minWidth="32" minHeight="32"
+           prefHeight="128" prefWidth="128">
+</StackPane>
