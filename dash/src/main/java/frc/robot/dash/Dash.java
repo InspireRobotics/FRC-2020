@@ -27,7 +27,7 @@ public class Dash extends Plugin {
     public List<ComponentType> getComponents() {
         return Arrays.asList(
             WidgetType.forAnnotatedWidget(BooleanCircle.class),
-            WidgetType.forAnnotatedWidget(AllianceBox.class)
-            );
+            WidgetType.forAnnotatedWidget(AllianceBox.class),
+            WidgetType.forAnnotatedWidget(SimpleText.class));
     }
 }

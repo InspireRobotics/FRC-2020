@@ -86,28 +86,4 @@ public class AllianceBox extends SimpleAnnotatedWidget<Boolean> {
     private Background createSolidColorBackground(Color color) {
         return new Background(new BackgroundFill(color, null, null));
     }
-
-    // public Color getBlueColor() {
-    // return blueColor.getValue();
-    // }
-
-    // public Property<Color> blueColorProperty() {
-    // return blueColor;
-    // }
-
-    // public void setBlueColor(Color trueColor) {
-    // this.blueColor.setValue(trueColor);
-    // }
-
-    // public Color getRedColor() {
-    // return redColor.getValue();
-    // }
-
-    // public Property<Color> redColorProperty() {
-    // return redColor;
-    // }
-
-    // public void setRedColor(Color falseColor) {
-    // this.redColor.setValue(falseColor);
-    // }
 }

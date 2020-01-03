@@ -63,28 +63,4 @@ public class BooleanCircle extends SimpleAnnotatedWidget<Boolean> {
     private Background createSolidColorBackground(Color color) {
         return new Background(new BackgroundFill(color, new CornerRadii(25, true), null));
     }
-
-    public Color getTrueColor() {
-        return trueColor.getValue();
-    }
-
-    public Property<Color> trueColorProperty() {
-        return trueColor;
-    }
-
-    public void setTrueColor(Color trueColor) {
-        this.trueColor.setValue(trueColor);
-    }
-
-    public Color getFalseColor() {
-        return falseColor.getValue();
-    }
-
-    public Property<Color> falseColorProperty() {
-        return falseColor;
-    }
-
-    public void setFalseColor(Color falseColor) {
-        this.falseColor.setValue(falseColor);
-    }
 }
