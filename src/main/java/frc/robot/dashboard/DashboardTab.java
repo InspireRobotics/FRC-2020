@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
+
 import frc.robot.Robot;
 import frc.robot.subsystems.Hardware;
 
@@ -64,7 +65,8 @@ class PreMatchTab extends DashboardTab {
                 .withSize(6, 1).withPosition(0, 0).withWidget("Simple Text");
 
         robotTime = tab.add("Robot Time", Long.toString(robot.getRobotTime())).withSize(5, 5)
-                .withPosition(6, 0).withWidget("Simple Text").withProperties(Map.of("Font size", 72));
+                .withPosition(6, 0).withWidget("Simple Text")
+                .withProperties(Map.of("Font size", 72));
     }
 
     @Override

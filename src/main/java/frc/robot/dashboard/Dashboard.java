@@ -2,6 +2,7 @@ package frc.robot.dashboard;
 
 import java.util.Arrays;
 import java.util.List;
+
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 
 import frc.robot.Robot;
@@ -46,7 +47,8 @@ public class Dashboard {
     /**
      * A more robust version of {@link Shuffleboard#selectTab(String)}
      * 
-     * @param tab the tab Shuffleboard should switch to.
+     * @param tab
+     *            the tab Shuffleboard should switch to.
      */
     private void setTab(DashboardTab tab) {
         // Do this to force shuffleboard to select the right tab

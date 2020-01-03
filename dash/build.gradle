@@ -1,6 +1,7 @@
 plugins {
     id "java"
     id 'org.openjfx.javafxplugin' version '0.0.8'
+    id "com.diffplug.gradle.spotless"
 }
 
 repositories {
@@ -31,4 +32,14 @@ task installPlugin(dependsOn: 'jar') {
     }
 
     description = "Builds the plugin JAR and installs it in the Shuffleboard plugins directory."
+}
+
+spotless {
+    java {
+        importOrder 'java', 'javax', 'edu', 'frc'
+
+        removeUnusedImports()
+
+        eclipse().configFile new File('../eclipse-formatter.xml')
+    }
 }

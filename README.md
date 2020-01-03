@@ -19,6 +19,13 @@ To build/install the dashboard plugin:
 gradlew dash:installPlugin
 ```
 
+## Code Format
+To format the code run the following command:
+
+```
+gradlew spotlessApply 
+```
+
 ## Questions:
 
 Email us at [inspirerobotics4283@gmail.com](mailto:inspirerobotics4283@gmail.com)

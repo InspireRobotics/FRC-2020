@@ -1,14 +1,7 @@
 package frc.robot.dash;
 
-import java.util.List;
 import java.util.Arrays;
-
-import edu.wpi.first.shuffleboard.api.prefs.Group;
-import edu.wpi.first.shuffleboard.api.prefs.Setting;
-import edu.wpi.first.shuffleboard.api.widget.Description;
-import edu.wpi.first.shuffleboard.api.widget.ParametrizedController;
-import edu.wpi.first.shuffleboard.api.widget.SimpleAnnotatedWidget;
-
+import java.util.List;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
@@ -17,14 +10,20 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Font;
 
+import edu.wpi.first.shuffleboard.api.prefs.Group;
+import edu.wpi.first.shuffleboard.api.prefs.Setting;
+import edu.wpi.first.shuffleboard.api.widget.Description;
+import edu.wpi.first.shuffleboard.api.widget.ParametrizedController;
+import edu.wpi.first.shuffleboard.api.widget.SimpleAnnotatedWidget;
+
 /**
- * A non-editable label on the dashboard. This widget also allows the user to 
+ * A non-editable label on the dashboard. This widget also allows the user to
  * change the font size and font familt (see below)
  * <p>
- * The properties are listed below: 
+ * The properties are listed below:
  * <ul>
- * <li> <b>Font size</b>: The size of font to use
- * <li> <b>Font family</b>: The family of font to use
+ * <li><b>Font size</b>: The size of font to use
+ * <li><b>Font family</b>: The family of font to use
  * <ul>
  */
 @Description(name = "Simple Text", dataTypes = String.class)
@@ -38,12 +37,14 @@ public class SimpleText extends SimpleAnnotatedWidget<String> {
     private Label textLabel;
 
     private final Property<Integer> fontSize = new SimpleObjectProperty<>(this, "fontSize", 32);
-    private final Property<String> fontFamiy = new SimpleObjectProperty<>(this, "fontFamily", "Arial");
+    private final Property<String> fontFamiy = new SimpleObjectProperty<>(this, "fontFamily",
+            "Arial");
 
     @FXML
     private void initialize() {
         textLabel.textProperty().bind(Bindings.createStringBinding(this::getText, dataProperty()));
-        textLabel.fontProperty().bind(Bindings.createObjectBinding(this::createFont, fontFamiy, fontSize));
+        textLabel.fontProperty()
+                .bind(Bindings.createObjectBinding(this::createFont, fontFamiy, fontSize));
     }
 
     private String getText() {
