@@ -17,6 +17,16 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Font;
 
+/**
+ * A non-editable label on the dashboard. This widget also allows the user to 
+ * change the font size and font familt (see below)
+ * <p>
+ * The properties are listed below: 
+ * <ul>
+ * <li> <b>Font size</b>: The size of font to use
+ * <li> <b>Font family</b>: The family of font to use
+ * <ul>
+ */
 @Description(name = "Simple Text", dataTypes = String.class)
 @ParametrizedController("SimpleText.fxml")
 public class SimpleText extends SimpleAnnotatedWidget<String> {

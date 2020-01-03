@@ -50,19 +50,21 @@ class PreMatchTab extends DashboardTab {
 
     @Override
     public void init(Robot robot) {
-        fmsWidget = tab.add("FMS Status", DriverStation.getInstance().isFMSAttached()).withSize(3, 1).withPosition(0,
-                1);
+        fmsWidget = tab.add("FMS Status", DriverStation.getInstance().isFMSAttached())
+                .withSize(3, 1).withPosition(0, 1);
 
-        dsWidget = tab.add("DS Status", DriverStation.getInstance().isDSAttached()).withSize(3, 1).withPosition(3, 1);
+        dsWidget = tab.add("DS Status", DriverStation.getInstance().isDSAttached()).withSize(3, 1)
+                .withPosition(3, 1);
 
         allianceWidget = tab.add("Alliance", isBlueDS())
-                .withProperties(Map.of("Color when true", "#0000FF", "Color when false", "#FF5555")).withSize(6, 3)
-                .withPosition(0, 2).withWidget("Alliance Box");
+                .withProperties(Map.of("Color when true", "#0000FF", "Color when false", "#FF5555"))
+                .withSize(6, 3).withPosition(0, 2).withWidget("Alliance Box");
 
-        matchNumber = tab.add("Match", "Match " + DriverStation.getInstance().getMatchNumber()).withSize(6, 1)
-                .withPosition(0, 0);
+        matchNumber = tab.add("Match", "Match " + DriverStation.getInstance().getMatchNumber())
+                .withSize(6, 1).withPosition(0, 0).withWidget("Simple Text");
 
-        robotTime = tab.add("Robot Time", Long.toString(robot.getRobotTime())).withSize(5, 5).withPosition(6, 0);
+        robotTime = tab.add("Robot Time", Long.toString(robot.getRobotTime())).withSize(5, 5)
+                .withPosition(6, 0).withWidget("Simple Text").withProperties(Map.of("Font size", 72));
     }
 
     @Override
@@ -95,14 +97,16 @@ abstract class HardwareTab extends DashboardTab {
 
     @Override
     void init(Robot robot) {
-        var subsystemLayout = tab.getLayout("Subsystems", BuiltInLayouts.kList).withSize(4, 4).withPosition(0, 0);
+        var subsystemLayout = tab.getLayout("Subsystems", BuiltInLayouts.kList).withSize(4, 4)
+                .withPosition(0, 0);
 
         robot.getHardware().getSubsystems().forEach(subsystem -> {
             subsystemLayout.add(subsystem.getName(), subsystem);
         });
 
-        tab.add("Drive", Hardware.drivetrain.getDrive()).withPosition(4, 0).withSize(3, 3);
-        robotTime = tab.add("Robot Time", Long.toString(robot.getRobotTime())).withPosition(4, 3).withSize(3, 1);
+        tab.add("Drive", Hardware.drivetrain.getDrive()).withPosition(4, 0).withSize(4, 3);
+        robotTime = tab.add("Robot Time", Long.toString(robot.getRobotTime())).withPosition(4, 3)
+                .withSize(4, 1).withWidget("Simple Text");
     }
 
     @Override

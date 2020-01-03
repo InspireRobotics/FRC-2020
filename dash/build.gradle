@@ -20,3 +20,15 @@ dependencies {
 
   compile "org.fxmisc.easybind:easybind:1.0.3"
 }
+
+task installPlugin(dependsOn: 'jar') {
+    doLast {
+        copy {
+            from(tasks.named("jar"))
+            into("${System.getProperty("user.home")}/Shuffleboard/plugins")
+        }
+
+    }
+
+    description = "Builds the plugin JAR and installs it in the Shuffleboard plugins directory."
+}

@@ -19,6 +19,18 @@ import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 
+/**
+ * A widget to display the current alliance. It is basically a 
+ * boolean box with text displayed for true and false. 
+ * <p>
+ * The properties are listed below: 
+ * <ul>
+ * <li> <b>Color when blue</b>: The text to show when the value is set to true
+ * <li> <b>Color when red</b>: The text to show when the value is set to false
+ * <li> <b>Text when blue</b>: The color to show when the value is set to true
+ * <li> <b>Text when red</b>: The color to show when the value is set to false
+ * <ul>
+ */
 @Description(name = "Alliance Box", dataTypes = Boolean.class)
 @ParametrizedController("AllianceBox.fxml")
 public class AllianceBox extends SimpleAnnotatedWidget<Boolean> {
