@@ -57,7 +57,7 @@ class PreMatchTab extends DashboardTab {
 
         allianceWidget = tab.add("Alliance", isBlueDS())
                 .withProperties(Map.of("Color when true", "#0000FF", "Color when false", "#FF5555")).withSize(6, 3)
-                .withPosition(0, 2);
+                .withPosition(0, 2).withWidget("Alliance Box");
 
         matchNumber = tab.add("Match", "Match " + DriverStation.getInstance().getMatchNumber()).withSize(6, 1)
                 .withPosition(0, 0);

@@ -25,6 +25,9 @@ public class Dash extends Plugin {
 
     @Override
     public List<ComponentType> getComponents() {
-        return Arrays.asList(WidgetType.forAnnotatedWidget(BooleanCircle.class));
+        return Arrays.asList(
+            WidgetType.forAnnotatedWidget(BooleanCircle.class),
+            WidgetType.forAnnotatedWidget(AllianceBox.class)
+            );
     }
 }
