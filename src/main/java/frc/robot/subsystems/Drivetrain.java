@@ -1,6 +1,8 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.Spark;
+import edu.wpi.first.wpilibj.SpeedControllerGroup;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
 
 import frc.robot.Robot;
@@ -13,7 +15,7 @@ import frc.robot.Robot;
  */
 public class Drivetrain extends SubsystemBase {
 
-    private MecanumDrive drive;
+    private DifferentialDrive drive;
 
     @Override
     public void init(Robot robot) {
@@ -22,19 +24,26 @@ public class Drivetrain extends SubsystemBase {
         var bl = new Spark(2);
         var br = new Spark(3);
 
-        drive = new MecanumDrive(fl, bl, fr, br);
+        var left = new SpeedControllerGroup(fl, bl);
+        var right = new SpeedControllerGroup(fr, br);
+
+        drive = new DifferentialDrive(left, right);
     }
 
     @Override
     public void periodic() {
         // Reset the power to zero every loop
         // to prevent safety warning
-        drive.driveCartesian(0, 0, 0);
+        setPower(0, 0);
     }
 
     @Override
     public void disable() {
-        drive.driveCartesian(0, 0, 0);
+        setPower(0, 0);
+    }
+
+    public void setPower(double left, double right){
+        drive.tankDrive(left, right);
     }
 
     @Override
@@ -42,7 +51,7 @@ public class Drivetrain extends SubsystemBase {
         return "Drivetrain";
     }
 
-    public MecanumDrive getDrive() {
+    public DifferentialDrive getDrive() {
         return drive;
     }
 }

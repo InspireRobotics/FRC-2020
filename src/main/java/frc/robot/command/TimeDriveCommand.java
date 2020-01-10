@@ -24,7 +24,7 @@ public class TimeDriveCommand extends WaitCommand {
 
     @Override
     public void execute() {
-        Hardware.drivetrain.getDrive().driveCartesian(0.0, 1.0, 0.0);
+        Hardware.drivetrain.setPower(.8, .8);
     }
 
     @Override
