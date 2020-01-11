@@ -1,5 +1,10 @@
 package frc.robot.subsystems;
 
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.SparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -20,10 +25,10 @@ public class Drivetrain extends SubsystemBase {
 
     @Override
     public void init(Robot robot) {
-        var fl = new Spark(Constants.CAN.DRIVE_FL);
-        var fr = new Spark(Constants.CAN.DRIVE_FR);
-        var bl = new Spark(Constants.CAN.DRIVE_BL);
-        var br = new Spark(Constants.CAN.DRIVE_BR);
+        var fl = new CANSparkMax(Constants.CAN.DRIVE_FL, MotorType.kBrushless);
+        var fr = new CANSparkMax(Constants.CAN.DRIVE_FR, MotorType.kBrushless);
+        var bl = new CANSparkMax(Constants.CAN.DRIVE_BL, MotorType.kBrushless);
+        var br = new CANSparkMax(Constants.CAN.DRIVE_BR, MotorType.kBrushless);
 
         var left = new SpeedControllerGroup(fl, bl);
         var right = new SpeedControllerGroup(fr, br);

@@ -35,6 +35,10 @@ public class Camera extends SubsystemBase {
 
     @Override
     public void periodic() {
+        if(camera == null){ //This is true when the subsystem is not attached
+            return;
+        }
+
         Mat input = new Mat();
         Mat output = new Mat();
         targetInput.grabFrame(input);
