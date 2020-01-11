@@ -3,9 +3,10 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.drive.MecanumDrive;
 
+import frc.robot.Constants;
 import frc.robot.Robot;
+import frc.robot.command.JoystickDriveCommand;
 
 /**
  * The drivetrain on the robot.
@@ -19,15 +20,17 @@ public class Drivetrain extends SubsystemBase {
 
     @Override
     public void init(Robot robot) {
-        var fl = new Spark(0);
-        var fr = new Spark(1);
-        var bl = new Spark(2);
-        var br = new Spark(3);
+        var fl = new Spark(Constants.CAN.DRIVE_FL);
+        var fr = new Spark(Constants.CAN.DRIVE_FR);
+        var bl = new Spark(Constants.CAN.DRIVE_BL);
+        var br = new Spark(Constants.CAN.DRIVE_BR);
 
         var left = new SpeedControllerGroup(fl, bl);
         var right = new SpeedControllerGroup(fr, br);
 
         drive = new DifferentialDrive(left, right);
+
+        setDefaultCommand(new JoystickDriveCommand());
     }
 
     @Override
@@ -42,7 +45,7 @@ public class Drivetrain extends SubsystemBase {
         setPower(0, 0);
     }
 
-    public void setPower(double left, double right){
+    public void setPower(double left, double right) {
         drive.tankDrive(left, right);
     }
 
