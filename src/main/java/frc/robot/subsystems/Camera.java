@@ -1,18 +1,21 @@
 package frc.robot.subsystems;
 
 import edu.wpi.cscore.*;
-import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.wpilibj.Spark;
-import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import frc.robot.Robot;
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
+import org.opencv.core.Point;
+import org.opencv.core.Size;
+
+import java.util.Arrays;
+import java.util.List;
+
 
 /**
- * The drivetrain on the robot.
+ * The camera on the robot.
  * 
- * This is responsible for managing the state of the drivetrain, including
- * encoder values (velocity, position, etc.)
+ * This is responsible for managing the camera and its output, including
+ * any processing which may be involved (in this case OpenCV)
  */
 public class Camera extends SubsystemBase {
 
@@ -20,7 +23,7 @@ public class Camera extends SubsystemBase {
     private CvSink targetInput;
     private CvSource targetOutput;
     private MjpegServer driverFeed;
-
+    private VisionProcessing processing;
 
     @Override
     public void init(Robot robot) {
@@ -37,13 +40,14 @@ public class Camera extends SubsystemBase {
 
     @Override
     public void periodic() {
+        if (camera == null) {
+            return;
+        }
+
         Mat input = new Mat();
-        Mat output = new Mat();
         targetInput.grabFrame(input);
 
-        Imgproc.bilateralFilter(input, output, 2, 1, 4);
-
-        targetOutput.putFrame(input);
+        targetOutput.putFrame(processing.BasicProcessing(input));
     }
 
     @Override
@@ -54,5 +58,26 @@ public class Camera extends SubsystemBase {
     @Override
     String getSubsystemName() {
         return "Camera";
+    }
+}
+
+
+/**
+ * The vision processing for the robot
+ *
+ * This is responsible for handling vision processing in an efficient manner for the camera.
+ * It does this through final allocation of any needed Mat objects, which are reused for each method call.
+ * However, this means any memory reserved by the class will be withheld until the class is de-allocated.
+ */
+class VisionProcessing {
+
+    private final List<Mat> processingFrames = Arrays.asList(new Mat(), new Mat());
+    private final Mat basicDilateKernal = Imgproc.getStructuringElement(Imgproc.MORPH_ELLIPSE, new Size(3, 3), new Point(1, 1));
+
+    Mat BasicProcessing(Mat input) {
+        Imgproc.bilateralFilter(input, processingFrames.get(0), 2, 4, 1);
+        Imgproc.dilate(processingFrames.get(0), processingFrames.get(1), basicDilateKernal);
+
+        return processingFrames.get(1).clone(); // Clone for thread-safety
     }
 }

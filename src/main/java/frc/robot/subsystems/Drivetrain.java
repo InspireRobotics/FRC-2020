@@ -19,10 +19,10 @@ public class Drivetrain extends SubsystemBase {
 
     @Override
     public void init(Robot robot) {
-        var fl = new Spark(0);
-        var fr = new Spark(1);
-        var bl = new Spark(2);
-        var br = new Spark(3);
+        var fl = new Spark(8);
+        var fr = new Spark(7);
+        var bl = new Spark(6);
+        var br = new Spark(5);
 
         var left = new SpeedControllerGroup(fl, bl);
         var right = new SpeedControllerGroup(fr, br);
