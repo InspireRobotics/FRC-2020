@@ -11,11 +11,12 @@ import frc.robot.Robot;
 public class Hardware {
 
     public static final Drivetrain drivetrain = new Drivetrain();
+    public static final Camera camera = new Camera();
 
     /**
      * A list of subsystems on the robot. All subsystems must be added to this!
      */
-    private final List<SubsystemBase> subsystems = Arrays.asList(drivetrain);
+    private final List<SubsystemBase> subsystems = Arrays.asList(drivetrain, camera);
 
     /**
      * Initializes all of the subsytems on the robot
