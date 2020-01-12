@@ -11,7 +11,7 @@ import frc.robot.Constants.POWER;
  */
 public class DistanceDriveCommand extends CommandBase {
 
-    private final double ERROR = 0.25;
+    private final double ERROR = 0.3;
 
     private final double targetLeft;
     private final double targetRight;

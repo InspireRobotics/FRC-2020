@@ -28,11 +28,11 @@ public class Constants {
         public static final double TELEOP_MAX = 0.5;
         public static final double TELEOP_MIN = 0.3;
         public static final double AUTO_MAX = 0.5;
-        public static final double AUTO_MIN = 0.2;
+        public static final double AUTO_MIN = 0.3;
     }
 
     public static class ENCODER {
-        public static final double COUNTS_TO_INCHES = (5.5 * Math.PI) / 10.75; // 6π inch wheel circumfrence with encoders set to 42 counts per rotation, geared to a 10.75:1 ratio
+        public static final double COUNTS_TO_INCHES = (5.5 * Math.PI) / 10.75 / 1.1; // 6π inch wheel circumfrence with encoders set to 42 counts per rotation, geared to a 10.75:1 ratio
     }
 
     public static class Joysticks {

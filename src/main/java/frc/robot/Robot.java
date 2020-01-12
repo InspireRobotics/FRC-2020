@@ -54,7 +54,7 @@ public class Robot extends TimedRobot {
         resetTime();
 
         CommandScheduler.getInstance().cancelAll();
-        CommandScheduler.getInstance().schedule(new DistanceDriveCommand(10));
+        CommandScheduler.getInstance().schedule(new DistanceDriveCommand(100));
     }
 
     @Override
