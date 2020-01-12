@@ -31,7 +31,12 @@ task installPlugin(dependsOn: 'jar') {
 
     }
 
-    description = "Builds the plugin JAR and installs it in the Shuffleboard plugins directory."
+    copy {
+        from("/themes")
+        into("${System.getProperty("user.home")}/Shuffleboard/themes")
+    }
+
+    description = "Builds the plugin JAR/themes and installs them in the Shuffleboard plugins/themes directory."
 }
 
 spotless {
