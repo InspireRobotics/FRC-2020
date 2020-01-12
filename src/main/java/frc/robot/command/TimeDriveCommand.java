@@ -24,7 +24,7 @@ public class TimeDriveCommand extends WaitCommand {
 
     @Override
     public void execute() {
-        Hardware.drivetrain.setPower(.8, .8);
+        Hardware.drivetrain.setPower(.3, .3);
     }
 
     @Override

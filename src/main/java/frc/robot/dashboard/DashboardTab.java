@@ -1,13 +1,12 @@
 package frc.robot.dashboard;
 
+import java.awt.*;
 import java.util.Map;
 
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
+import edu.wpi.first.wpilibj.shuffleboard.*;
 
 import frc.robot.Robot;
 import frc.robot.subsystems.Hardware;
@@ -95,7 +94,12 @@ class PreMatchTab extends DashboardTab {
  * It contains the basic widgets in both tabs such as subsystems, times, etc.
  */
 abstract class HardwareTab extends DashboardTab {
+
     private SimpleWidget robotTime;
+    private ShuffleboardLayout encoders;
+
+    private NetworkTableEntry frontLeft;
+    private NetworkTableEntry frontRight;
 
     @Override
     void init(Robot robot) {
@@ -106,14 +110,25 @@ abstract class HardwareTab extends DashboardTab {
             subsystemLayout.add(subsystem.getName(), subsystem);
         });
 
-        tab.add("Drive", Hardware.drivetrain.getDrive()).withPosition(4, 0).withSize(4, 3);
-        robotTime = tab.add("Robot Time", Long.toString(robot.getRobotTime())).withPosition(4, 3)
-                .withSize(4, 1).withWidget("Simple Text");
+        tab.add("Drive", Hardware.drivetrain.getDrive())
+                .withPosition(4, 0).withSize(4, 3);
+        robotTime = tab.add("Robot Time", Long.toString(robot.getRobotTime()))
+                .withPosition(4, 3).withSize(4, 1).withWidget("Simple Text");
+
+        encoders = tab.getLayout("Encoders", BuiltInLayouts.kGrid)
+                .withSize(3,2).withPosition(8,0);
+
+        frontLeft = encoders.add("Front Left", 0.0)
+                .withSize(5, 1).withPosition(0,0).getEntry();
+        frontRight = encoders.add("Front Right", 0.0)
+                .withSize(5, 1).withPosition(0, 1).getEntry();
     }
 
     @Override
     void update(Robot robot) {
         robotTime.getEntry().setString(Long.toString(robot.getRobotTime()));
+        frontLeft.setValue(Hardware.drivetrain.getFl().getEncoder().getPosition());
+        frontRight.setValue(Hardware.drivetrain.getFr().getEncoder().getPosition());
     }
 }
 

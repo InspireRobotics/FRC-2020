@@ -11,11 +11,20 @@ import java.util.Arrays;
 import java.util.List;
 
 
+import edu.wpi.cscore.*;
+
+import frc.robot.Robot;
+
 /**
+<<<<<<< HEAD
  * The camera on the robot.
  * 
  * This is responsible for managing the camera and its output, including
  * any processing which may be involved (in this case OpenCV)
+=======
+ * The USB Camera on the shooter. This class is also responsible for setting up
+ * the vision targetting proccessing.
+>>>>>>> ad02909ad6b546f67bbd391f524ad753dad1ab94
  */
 public class Camera extends SubsystemBase {
 
@@ -29,10 +38,12 @@ public class Camera extends SubsystemBase {
     public void init(Robot robot) {
         camera = new UsbCamera("Front Camera", 0); // Set up the input stream for the USB camera
 
-        targetInput = new CvSink("Vision Target Processing"); // Set up the processing segment of the vision targeting pipeline
+        targetInput = new CvSink("Vision Target Processing"); // Set up the processing segment of
+                                                              // the vision targeting pipeline
         targetInput.setSource(camera); // Connect the camera to the processing segment
 
-        targetOutput = new CvSource("Vision Target Output", VideoMode.PixelFormat.kMJPEG, 640, 480, 30);
+        targetOutput = new CvSource("Vision Target Output",
+                        VideoMode.PixelFormat.kMJPEG, 640, 480, 30);
 
         driverFeed = new MjpegServer("Baked Output", 1181);
         driverFeed.setSource(targetOutput);
@@ -40,7 +51,8 @@ public class Camera extends SubsystemBase {
 
     @Override
     public void periodic() {
-        if (camera == null) {
+
+        if (camera == null){
             return;
         }
 
@@ -52,7 +64,10 @@ public class Camera extends SubsystemBase {
 
     @Override
     public void disable() {
-        /* As there are no moving parts, and there is not a great way to re-enable, this does nothing */
+        /*
+         * As there are no moving parts, and there is not a great way to re-enable, this
+         * does nothing
+         */
     }
 
     @Override
@@ -72,7 +87,8 @@ public class Camera extends SubsystemBase {
 class VisionProcessing {
 
     private final List<Mat> processingFrames = Arrays.asList(new Mat(), new Mat());
-    private final Mat basicDilateKernal = Imgproc.getStructuringElement(Imgproc.MORPH_ELLIPSE, new Size(3, 3), new Point(1, 1));
+    private final Mat basicDilateKernal =
+            Imgproc.getStructuringElement(Imgproc.MORPH_ELLIPSE, new Size(3, 3), new Point(1, 1));
 
     Mat BasicProcessing(Mat input) {
         Imgproc.bilateralFilter(input, processingFrames.get(0), 2, 4, 1);

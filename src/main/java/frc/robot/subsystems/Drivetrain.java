@@ -1,11 +1,14 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.Spark;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.drive.MecanumDrive;
 
+import frc.robot.Constants;
 import frc.robot.Robot;
+import frc.robot.command.JoystickDriveCommand;
 
 /**
  * The drivetrain on the robot.
@@ -15,19 +18,39 @@ import frc.robot.Robot;
  */
 public class Drivetrain extends SubsystemBase {
 
+    private CANSparkMax fl;
+    private CANSparkMax fr;
+    private CANSparkMax bl;
+    private CANSparkMax br;
+
     private DifferentialDrive drive;
 
     @Override
     public void init(Robot robot) {
-        var fl = new Spark(8);
-        var fr = new Spark(7);
-        var bl = new Spark(6);
-        var br = new Spark(5);
+        fl = new CANSparkMax(Constants.CAN.DRIVE_FL, MotorType.kBrushless);
+        fr = new CANSparkMax(Constants.CAN.DRIVE_FR, MotorType.kBrushless);
+        bl = new CANSparkMax(Constants.CAN.DRIVE_BL, MotorType.kBrushless);
+        br = new CANSparkMax(Constants.CAN.DRIVE_BR, MotorType.kBrushless);
 
-        var left = new SpeedControllerGroup(fl, bl);
-        var right = new SpeedControllerGroup(fr, br);
+        fl.getEncoder().setPositionConversionFactor(Constants.ENCODER.COUNTS_TO_INCHES);
+        fr.getEncoder().setPositionConversionFactor(Constants.ENCODER.COUNTS_TO_INCHES);
+        bl.getEncoder().setPositionConversionFactor(Constants.ENCODER.COUNTS_TO_INCHES);
+        br.getEncoder().setPositionConversionFactor(Constants.ENCODER.COUNTS_TO_INCHES);
+
+        fl.getEncoder().setPosition(0.0);
+        fr.getEncoder().setPosition(0.0);
+        bl.getEncoder().setPosition(0.0);
+        br.getEncoder().setPosition(0.0);
+
+        fr.setInverted(true);
+        br.setInverted(true);
+
+        SpeedControllerGroup left = new SpeedControllerGroup(fl, bl);
+        SpeedControllerGroup right = new SpeedControllerGroup(fr, br);
 
         drive = new DifferentialDrive(left, right);
+
+        setDefaultCommand(new JoystickDriveCommand());
     }
 
     @Override
@@ -42,7 +65,7 @@ public class Drivetrain extends SubsystemBase {
         setPower(0, 0);
     }
 
-    public void setPower(double left, double right){
+    public void setPower(double left, double right) {
         drive.tankDrive(left, right);
     }
 
@@ -53,5 +76,21 @@ public class Drivetrain extends SubsystemBase {
 
     public DifferentialDrive getDrive() {
         return drive;
+    }
+
+    public CANSparkMax getBl() {
+        return bl;
+    }
+
+    public CANSparkMax getBr() {
+        return br;
+    }
+
+    public CANSparkMax getFl() {
+        return fl;
+    }
+
+    public CANSparkMax getFr() {
+        return fr;
     }
 }
