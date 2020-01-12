@@ -13,7 +13,7 @@ To deploy the code to the robot run the following command:
 gradlew deployRoboRio
 ```
 
-To build/install the dashboard plugin:
+To build/install the dashboard plugin/themes:
 
 ```
 gradlew dash:installPlugin
