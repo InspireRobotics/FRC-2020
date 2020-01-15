@@ -25,7 +25,8 @@ public class JoystickDriveCommand extends CommandBase {
         left = Math.abs(left) < Constants.POWER.TELEOP_MIN ? 0 : left;
         right = Math.abs(right) < Constants.POWER.TELEOP_MIN ? 0 : right;
 
-        Hardware.drivetrain.setPower(left * Constants.POWER.TELEOP_MAX, right * Constants.POWER.TELEOP_MAX);
+        Hardware.drivetrain.setPower(left * Constants.POWER.TELEOP_MAX,
+                right * Constants.POWER.TELEOP_MAX);
     }
 
 }

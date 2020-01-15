@@ -1,65 +1,72 @@
 package frc.robot.subsystems;
 
-import edu.wpi.cscore.*;
-import frc.robot.Robot;
-import org.opencv.core.Mat;
-import org.opencv.imgproc.Imgproc;
-import org.opencv.core.Point;
-import org.opencv.core.Size;
-
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfPoint;
+import org.opencv.core.Point;
+import org.opencv.core.Size;
+import org.opencv.imgproc.Imgproc;
 
 import edu.wpi.cscore.*;
+import edu.wpi.first.cameraserver.CameraServer;
 
 import frc.robot.Robot;
 
 /**
-<<<<<<< HEAD
  * The camera on the robot.
  * 
- * This is responsible for managing the camera and its output, including
- * any processing which may be involved (in this case OpenCV)
-=======
- * The USB Camera on the shooter. This class is also responsible for setting up
- * the vision targetting proccessing.
->>>>>>> ad02909ad6b546f67bbd391f524ad753dad1ab94
+ * This is responsible for managing the camera and its output, including any
+ * processing which may be involved (in this case OpenCV).
  */
 public class Camera extends SubsystemBase {
 
     private UsbCamera camera;
     private CvSink targetInput;
     private CvSource targetOutput;
-    private MjpegServer driverFeed;
-    private VisionProcessing processing;
 
     @Override
     public void init(Robot robot) {
-        camera = new UsbCamera("Front Camera", 0); // Set up the input stream for the USB camera
+        camera = CameraServer.getInstance().startAutomaticCapture();
+        camera.setVideoMode(VideoMode.PixelFormat.kMJPEG, 640, 480, 120);
+        camera.setConnectionStrategy(VideoSource.ConnectionStrategy.kKeepOpen);
 
-        targetInput = new CvSink("Vision Target Processing"); // Set up the processing segment of
-                                                              // the vision targeting pipeline
-        targetInput.setSource(camera); // Connect the camera to the processing segment
+        targetInput = new CvSink("Pipeline");
+        targetInput.setSource(camera);
+        targetOutput = CameraServer.getInstance().putVideo("Output", 640, 480);
 
-        targetOutput = new CvSource("Vision Target Output",
-                        VideoMode.PixelFormat.kMJPEG, 640, 480, 30);
+        new Thread(() -> {
+            Mat source = new Mat();
+            Mat output;
+            ArrayList<MatOfPoint> bakedOutput;
 
-        driverFeed = new MjpegServer("Baked Output", 1181);
-        driverFeed.setSource(targetOutput);
+            while(!Thread.interrupted()) {
+                if (targetInput.grabFrame(source) == 0) {
+                    targetOutput.notifyError(targetInput.getError());
+                    continue;
+                }
+
+                output = VisionProcessing.BasicProcessing(source);
+                /*If this works, I guess I did it?
+                bakedOutput = VisionProcessing.BakedProcessing(source);
+                //TODO: Figure out how to convert ArrayList<MatOfPoint> to an image*/
+                targetOutput.putFrame(output);
+            }
+        }).start();
     }
 
     @Override
     public void periodic() {
 
-        if (camera == null){
+        /*if (camera == null) {
             return;
         }
-
-        Mat input = new Mat();
-        targetInput.grabFrame(input);
-
-        targetOutput.putFrame(processing.BasicProcessing(input));
+         * Mat input = new Mat(); targetInput.grabFrame(input);
+         * 
+         * targetOutput.putFrame(input);
+         */
     }
 
     @Override
@@ -76,24 +83,30 @@ public class Camera extends SubsystemBase {
     }
 }
 
-
 /**
  * The vision processing for the robot
  *
- * This is responsible for handling vision processing in an efficient manner for the camera.
- * It does this through final allocation of any needed Mat objects, which are reused for each method call.
- * However, this means any memory reserved by the class will be withheld until the class is de-allocated.
+ * This is responsible for handling vision processing in an efficient manner for
+ * the camera. It does this through final allocation of any needed Mat objects,
+ * which are reused for each method call. However, this means any memory
+ * reserved by the class will be withheld until the class is de-allocated.
  */
 class VisionProcessing {
 
-    private final List<Mat> processingFrames = Arrays.asList(new Mat(), new Mat());
-    private final Mat basicDilateKernal =
-            Imgproc.getStructuringElement(Imgproc.MORPH_ELLIPSE, new Size(3, 3), new Point(1, 1));
+    protected static final List<Mat> processingFrames = Arrays.asList(new Mat(), new Mat());
+    protected static final Mat basicDilateKernel = Imgproc
+            .getStructuringElement(Imgproc.MORPH_ELLIPSE, new Size(3, 3), new Point(1, 1));
+    protected static final GripPipeline pipe = new GripPipeline();
 
-    Mat BasicProcessing(Mat input) {
+    protected static Mat BasicProcessing(Mat input) {
         Imgproc.bilateralFilter(input, processingFrames.get(0), 2, 4, 1);
-        Imgproc.dilate(processingFrames.get(0), processingFrames.get(1), basicDilateKernal);
+        Imgproc.dilate(processingFrames.get(0), processingFrames.get(1), basicDilateKernel);
 
         return processingFrames.get(1).clone(); // Clone for thread-safety
+    }
+
+    protected static ArrayList<MatOfPoint> BakedProcessing(Mat input) {
+        pipe.process(input);
+        return pipe.getFilterContoursOutput();
     }
 }

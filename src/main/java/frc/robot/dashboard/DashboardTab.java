@@ -1,6 +1,5 @@
 package frc.robot.dashboard;
 
-import java.awt.*;
 import java.util.Map;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -110,18 +109,15 @@ abstract class HardwareTab extends DashboardTab {
             subsystemLayout.add(subsystem.getName(), subsystem);
         });
 
-        tab.add("Drive", Hardware.drivetrain.getDrive())
-                .withPosition(4, 0).withSize(4, 3);
-        robotTime = tab.add("Robot Time", Long.toString(robot.getRobotTime()))
-                .withPosition(4, 3).withSize(4, 1).withWidget("Simple Text");
+        tab.add("Drive", Hardware.drivetrain.getDrive()).withPosition(4, 0).withSize(4, 3);
+        robotTime = tab.add("Robot Time", Long.toString(robot.getRobotTime())).withPosition(4, 3)
+                .withSize(4, 1).withWidget("Simple Text");
 
-        encoders = tab.getLayout("Encoders", BuiltInLayouts.kGrid)
-                .withSize(3,2).withPosition(8,0);
+        encoders = tab.getLayout("Encoders", BuiltInLayouts.kGrid).withSize(3, 2).withPosition(8,
+                0);
 
-        frontLeft = encoders.add("Front Left", 0.0)
-                .withSize(5, 1).withPosition(0,0).getEntry();
-        frontRight = encoders.add("Front Right", 0.0)
-                .withSize(5, 1).withPosition(0, 1).getEntry();
+        frontLeft = encoders.add("Front Left", 0.0).withSize(5, 1).withPosition(0, 0).getEntry();
+        frontRight = encoders.add("Front Right", 0.0).withSize(5, 1).withPosition(0, 1).getEntry();
     }
 
     @Override

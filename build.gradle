@@ -77,3 +77,7 @@ spotless {
         eclipse().configFile new File('eclipse-formatter.xml')
     }
 }
+
+wpi {
+    opencvVersion = "4.2.0"; //TODO: If this fails switch to 4.2.0
+}

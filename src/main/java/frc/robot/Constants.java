@@ -32,7 +32,17 @@ public class Constants {
     }
 
     public static class ENCODER {
-        public static final double COUNTS_TO_INCHES = (5.5 * Math.PI) / 10.75 / 1.1; // 6π inch wheel circumfrence with encoders set to 42 counts per rotation, geared to a 10.75:1 ratio
+        public static final double COUNTS_TO_INCHES = (5.5 * Math.PI) / 10.75 / 1.1; // 6π inch
+                                                                                     // wheel
+                                                                                     // circumfrence
+                                                                                     // with
+                                                                                     // encoders set
+                                                                                     // to 42 counts
+                                                                                     // per
+                                                                                     // rotation,
+                                                                                     // geared to a
+                                                                                     // 10.75:1
+                                                                                     // ratio
     }
 
     public static class Joysticks {
