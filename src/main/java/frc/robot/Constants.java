@@ -27,8 +27,8 @@ public class Constants {
     public static class POWER {
         public static final double TELEOP_MAX = 0.5;
         public static final double TELEOP_MIN = 0.3;
-        public static final double AUTO_MAX = 0.5;
-        public static final double AUTO_MIN = 0.3;
+        public static final double AUTO_MAX = 0.2;
+        public static final double AUTO_MIN = 0.15;
     }
 
     public static class ENCODER {

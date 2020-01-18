@@ -42,6 +42,9 @@ public class Drivetrain extends SubsystemBase {
         bl.getEncoder().setPosition(0.0);
         br.getEncoder().setPosition(0.0);
 
+        fl.setInverted(true);
+        bl.setInverted(true);
+
         fr.setInverted(true);
         br.setInverted(true);
 
