@@ -2,6 +2,8 @@ package frc.robot.command;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
+import edu.wpi.first.wpiutil.math.MathUtil;
+import frc.robot.Constants;
 import frc.robot.Constants.POWER;
 import frc.robot.subsystems.Hardware;
 
@@ -21,8 +23,8 @@ public class DistanceDriveCommand extends CommandBase {
     private boolean onTarget = false;
 
     public DistanceDriveCommand(double inches) {
-        targetLeft = Hardware.drivetrain.getFl().getEncoder().getPosition() + inches;
-        targetRight = Hardware.drivetrain.getFr().getEncoder().getPosition() + inches;
+        targetLeft = Hardware.drivetrain.getFl().getEncoder().getPosition() * Constants.ENCODER.COUNTS_TO_INCHES + inches;
+        targetRight = Hardware.drivetrain.getFr().getEncoder().getPosition() * Constants.ENCODER.COUNTS_TO_INCHES + inches;
 
         System.out.println(String.format("Targets: [L:%f.1, R:%f.1]", targetLeft, targetRight));
 
@@ -38,28 +40,16 @@ public class DistanceDriveCommand extends CommandBase {
     public void execute() {
 
         double powerLeft = Math
-                .atan(Hardware.drivetrain.getFl().getEncoder().getPosition() - targetLeft)
+                .atan(Hardware.drivetrain.getFl().getEncoder().getPosition() * Constants.ENCODER.COUNTS_TO_INCHES - targetLeft)
                 / (Math.PI / 2);
         double powerRight = Math
-                .atan(Hardware.drivetrain.getFr().getEncoder().getPosition() - targetRight)
+                .atan(Hardware.drivetrain.getFr().getEncoder().getPosition() * Constants.ENCODER.COUNTS_TO_INCHES - targetRight)
                 / (Math.PI / 2);
 
-        powerLeft = Math.abs(powerLeft) > POWER.AUTO_MAX ? POWER.AUTO_MAX * Math.signum(powerLeft)
-                : powerLeft;
-        powerRight = Math.abs(powerRight) > POWER.AUTO_MAX
-                ? POWER.AUTO_MAX * Math.signum(powerRight)
-                : powerRight;
+        powerLeft = MathUtil.clamp(Math.abs(powerLeft), POWER.AUTO_MIN, POWER.AUTO_MAX) * Math.signum(powerLeft) * Constants.ENCODER.MAX_RPM;
+        powerRight = MathUtil.clamp(Math.abs(powerRight), POWER.AUTO_MIN, POWER.AUTO_MAX) * Math.signum(powerRight) * Constants.ENCODER.MAX_RPM;
 
-        powerLeft = Math.abs(powerLeft) < POWER.AUTO_MIN && Math
-                .abs(targetLeft - Hardware.drivetrain.getFl().getEncoder().getPosition()) < ERROR
-                        ? POWER.AUTO_MIN * Math.signum(powerLeft)
-                        : powerLeft;
-        powerRight = Math.abs(powerRight) < POWER.AUTO_MIN && Math
-                .abs(targetRight - Hardware.drivetrain.getFr().getEncoder().getPosition()) < ERROR
-                        ? POWER.AUTO_MIN * Math.signum(powerRight)
-                        : powerRight;
-
-        Hardware.drivetrain.setPower(powerLeft, powerRight);
+        Hardware.drivetrain.setVelocity(powerLeft, powerRight);
     }
 
     @Override
@@ -68,6 +58,7 @@ public class DistanceDriveCommand extends CommandBase {
             System.out.println("Reached target!");
         }
         Hardware.drivetrain.disable();
+        Hardware.drivetrain.flushError();
     }
 
     @Override

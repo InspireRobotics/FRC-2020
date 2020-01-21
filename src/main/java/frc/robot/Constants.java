@@ -22,6 +22,9 @@ public class Constants {
         public static final int DRIVE_FR = 6;
         public static final int DRIVE_BL = 7;
         public static final int DRIVE_BR = 8;
+
+        public static final int SHOOT_L = 3;
+        public static final int SHOOT_R = 4;
     }
 
     public static class POWER {
@@ -43,6 +46,7 @@ public class Constants {
                                                                                      // geared to a
                                                                                      // 10.75:1
                                                                                      // ratio
+        public static final double MAX_RPM = 3500; // Maximum RPM used in PID-controlled applications
     }
 
     public static class Joysticks {

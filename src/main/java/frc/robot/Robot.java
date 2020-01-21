@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 import frc.robot.command.AlignCommand;
-import frc.robot.command.DistanceDriveCommand;
+import frc.robot.command.ButtonShootCommand;
 import frc.robot.dashboard.Dashboard;
 import frc.robot.subsystems.Hardware;
 
@@ -50,7 +50,7 @@ public class Robot extends TimedRobot {
     public void autonomousInit() {
         System.out.println("Auto Init!");
 
-        dashboard.autonomousInit();
+        //dashboard.autonomousInit();
         resetTime();
 
         CommandScheduler.getInstance().cancelAll();
@@ -66,11 +66,13 @@ public class Robot extends TimedRobot {
     public void teleopInit() {
         System.out.println("TeleOp Init!");
 
-        dashboard.teleopInit();
+        //dashboard.teleopInit();
         resetTime();
 
-        CommandScheduler.getInstance().cancelAll();
+        Hardware.shooter.enableTeleop();
 
+        CommandScheduler.getInstance().cancelAll();
+        CommandScheduler.getInstance().schedule(new ButtonShootCommand());
     }
 
     @Override

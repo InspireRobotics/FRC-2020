@@ -1,5 +1,6 @@
 package frc.robot.command;
 
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 import frc.robot.Constants;
@@ -17,10 +18,10 @@ public class JoystickDriveCommand extends CommandBase {
 
     @Override
     public void execute() {
-        var joystick = Constants.Joysticks.drive;
+        XboxController joystick = Constants.Joysticks.drive;
 
-        var left = joystick.getRawAxis(1);
-        var right = joystick.getRawAxis(5);
+        double left = joystick.getRawAxis(1);
+        double right = joystick.getRawAxis(5);
 
         left = Math.abs(left) < Constants.POWER.TELEOP_MIN ? 0 : left;
         right = Math.abs(right) < Constants.POWER.TELEOP_MIN ? 0 : right;

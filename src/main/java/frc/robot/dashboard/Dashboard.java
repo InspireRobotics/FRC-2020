@@ -36,13 +36,13 @@ public class Dashboard {
         tabs.forEach(tab -> tab.update(robot));
     }
 
-    public void autonomousInit() {
+   /* public void autonomousInit() {
         setTab(autoTab);
     }
 
     public void teleopInit() {
         setTab(teleOpTab);
-    }
+    }*/
 
     /**
      * A more robust version of {@link Shuffleboard#selectTab(String)}
