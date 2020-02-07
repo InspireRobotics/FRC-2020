@@ -18,6 +18,7 @@ public class Dashboard {
      */
     private final List<DashboardTab> tabs;
     private final Robot robot;
+    private String currentTab;
 
     private final DashboardTab preMatchTab = new PreMatchTab();
     private final DashboardTab autoTab = new AutoTab();
@@ -29,20 +30,21 @@ public class Dashboard {
         this.tabs = Arrays.asList(preMatchTab, autoTab, teleOpTab);
         this.tabs.forEach(tab -> tab.init(robot));
 
+        currentTab = "preMathTab";
         setTab(preMatchTab);
     }
 
     public void update() {
-        tabs.forEach(tab -> tab.update(robot));
+        tabs.forEach(tab -> accept(tab));
     }
 
-   /* public void autonomousInit() {
+    public void autonomousInit() {
         setTab(autoTab);
     }
 
     public void teleopInit() {
         setTab(teleOpTab);
-    }*/
+    }
 
     /**
      * A more robust version of {@link Shuffleboard#selectTab(String)}
@@ -57,5 +59,12 @@ public class Dashboard {
         // forcing it to go another tab, this makes sure it switches every time.
         Shuffleboard.selectTab("");
         Shuffleboard.selectTab(tab.getName());
+        currentTab = tab.getName();
+    }
+
+    private void accept(DashboardTab tab) {
+        if (tab.getName().equals(currentTab)) {
+            tab.update(robot);
+        }
     }
 }

@@ -25,28 +25,33 @@ public class Constants {
 
         public static final int SHOOT_L = 3;
         public static final int SHOOT_R = 4;
+
+        public static final int INTAKE = 0; // TODO: Add final values for hopper motors
+        public static final int HOPPER_HOLD = 0;
+        public static final int HOPPER_LIFT = 0;
+        public static final int HOPPER_SPIN_BOTTOM = 0;
+        public static final int HOPPER_SPIN_TOP = 0;
+
+        public static final int SPW_LIFT = 0;
+        public static final int SPW_SPIN = 0;
+    }
+
+    public static class DIO {
+        public static final int PHOTOGATE = 0;
     }
 
     public static class POWER {
         public static final double TELEOP_MAX = 0.5;
         public static final double TELEOP_MIN = 0.3;
-        public static final double AUTO_MAX = 0.2;
+        public static final double AUTO_MAX = 0.3;
         public static final double AUTO_MIN = 0.15;
     }
 
     public static class ENCODER {
-        public static final double COUNTS_TO_INCHES = (5.5 * Math.PI) / 10.75 / 1.1; // 6π inch
-                                                                                     // wheel
-                                                                                     // circumfrence
-                                                                                     // with
-                                                                                     // encoders set
-                                                                                     // to 42 counts
-                                                                                     // per
-                                                                                     // rotation,
-                                                                                     // geared to a
-                                                                                     // 10.75:1
-                                                                                     // ratio
-        public static final double MAX_RPM = 3500; // Maximum RPM used in PID-controlled applications
+        public static final double COUNTS_TO_INCHES_DRIVETRAIN = (5.5 * Math.PI) / 10.75 / 1.1;
+        public static final double MAX_RPM = 3500; // Maximum RPM used in PID-controlled
+                                                   // applications
+        public static final double COUNTS_TO_ROTATIONS_STWLIFT = 1 / 42 / 10; // 42 counts per rot, 10:1 gearbox
     }
 
     public static class Joysticks {
@@ -54,4 +59,19 @@ public class Constants {
         public static final XboxController aux = new XboxController(1);
     }
 
+    public static class I2C {
+        public static final int PIXYCAM = 0x52;
+    }
+
+    public static class PIXYCAM {
+        public static final int NO_CHECKSUM_SYNC = 0xc1ae;
+        public static final int CHECKSUM_SYNC = 0xc1af;
+    }
+
+    public enum COLORS {
+        RED,
+        YELLOW,
+        GREEN,
+        BLUE
+    }
 }

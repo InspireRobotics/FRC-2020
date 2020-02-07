@@ -1,13 +1,14 @@
 package frc.robot.command;
 
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
-public class AutoCommand extends CommandBase {
-    //TODO: Call align command, then align to trench and drive to trench
-
-
-    @Override
-    public void execute() {
-
+/**
+ * The primary autonomous logic
+ */
+public class AutoCommand extends SequentialCommandGroup {
+    public AutoCommand() {
+        addCommands(new DistanceDriveCommand(-20), new AlignCommand(), // TODO: Replace with
+                                                                       // ScoreCommand
+                new DistanceDriveCommand(-50));
     }
 }

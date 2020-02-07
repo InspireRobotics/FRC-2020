@@ -36,10 +36,16 @@ public class Drivetrain extends SubsystemBase {
         bl = new CANSparkMax(Constants.CAN.DRIVE_BL, MotorType.kBrushless);
         br = new CANSparkMax(Constants.CAN.DRIVE_BR, MotorType.kBrushless);
 
-        /*fl.getEncoder().setPositionConversionFactor(Constants.ENCODER.COUNTS_TO_INCHES);
-        fr.getEncoder().setPositionConversionFactor(Constants.ENCODER.COUNTS_TO_INCHES);
-        bl.getEncoder().setPositionConversionFactor(Constants.ENCODER.COUNTS_TO_INCHES);
-        br.getEncoder().setPositionConversionFactor(Constants.ENCODER.COUNTS_TO_INCHES);*/
+        /*
+         * fl.getEncoder().setPositionConversionFactor(Constants.ENCODER.
+         * COUNTS_TO_INCHES);
+         * fr.getEncoder().setPositionConversionFactor(Constants.ENCODER.
+         * COUNTS_TO_INCHES);
+         * bl.getEncoder().setPositionConversionFactor(Constants.ENCODER.
+         * COUNTS_TO_INCHES);
+         * br.getEncoder().setPositionConversionFactor(Constants.ENCODER.
+         * COUNTS_TO_INCHES);
+         */
 
         fl.getEncoder().setPosition(0.0);
         fr.getEncoder().setPosition(0.0);
@@ -55,7 +61,7 @@ public class Drivetrain extends SubsystemBase {
         SpeedControllerGroup left = new SpeedControllerGroup(fl, bl);
         SpeedControllerGroup right = new SpeedControllerGroup(fr, br);
 
-        leftControl = new PIDController(2, 0.5,1);
+        leftControl = new PIDController(2, 0.5, 1);
         rightControl = new PIDController(2, 0.5, 1);
 
         leftControl.setTolerance(10);
@@ -71,7 +77,6 @@ public class Drivetrain extends SubsystemBase {
         // Reset the power to zero every loop
         // to prevent safety warning
         setPower(0, 0);
-        PIDController controller = new PIDController(1, 1, 1);
     }
 
     @Override
@@ -83,13 +88,11 @@ public class Drivetrain extends SubsystemBase {
         drive.tankDrive(left, right);
     }
 
-    public void setVelocity(double left, double right) {
-        drive.tankDrive(leftControl.calculate(fl.getEncoder().getVelocity(), left), rightControl.calculate(fr.getEncoder().getVelocity(), right));
-    }
-
     public void flushError() {
         leftControl.reset();
         rightControl.reset();
+        fl.getEncoder().setPosition(0);
+        fr.getEncoder().setPosition(0);
     }
 
     @Override
@@ -101,19 +104,11 @@ public class Drivetrain extends SubsystemBase {
         return drive;
     }
 
-    public CANSparkMax getBl() {
-        return bl;
+    public double leftEncoder() {
+        return -fl.getEncoder().getPosition();
     }
 
-    public CANSparkMax getBr() {
-        return br;
-    }
-
-    public CANSparkMax getFl() {
-        return fl;
-    }
-
-    public CANSparkMax getFr() {
-        return fr;
+    public double rightEncoder() {
+        return fr.getEncoder().getPosition();
     }
 }

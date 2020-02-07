@@ -4,10 +4,10 @@ import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
-import frc.robot.command.AlignCommand;
-import frc.robot.command.ButtonShootCommand;
+import frc.robot.command.AutoCommand;
 import frc.robot.dashboard.Dashboard;
 import frc.robot.subsystems.Hardware;
 
@@ -30,6 +30,8 @@ public class Robot extends TimedRobot {
 
     @Override
     public void robotInit() {
+        LiveWindow.disableAllTelemetry();
+
         System.out.println("Robot Init!");
 
         resetTime();
@@ -50,11 +52,11 @@ public class Robot extends TimedRobot {
     public void autonomousInit() {
         System.out.println("Auto Init!");
 
-        //dashboard.autonomousInit();
+        dashboard.autonomousInit();
         resetTime();
 
         CommandScheduler.getInstance().cancelAll();
-        CommandScheduler.getInstance().schedule(new AlignCommand());
+        CommandScheduler.getInstance().schedule(new AutoCommand());
     }
 
     @Override
@@ -66,17 +68,17 @@ public class Robot extends TimedRobot {
     public void teleopInit() {
         System.out.println("TeleOp Init!");
 
-        //dashboard.teleopInit();
+        dashboard.teleopInit();
         resetTime();
 
-        Hardware.shooter.enableTeleop();
-
         CommandScheduler.getInstance().cancelAll();
-        CommandScheduler.getInstance().schedule(new ButtonShootCommand());
+        // CommandScheduler.getInstance().schedule(new ButtonShootCommand());
     }
 
     @Override
     public void teleopPeriodic() {
+        Hardware.hopper.runHopper();
+        Hardware.wheelSpinner.run();
         CommandScheduler.getInstance().run();
     }
 

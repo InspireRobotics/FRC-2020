@@ -1,7 +1,11 @@
 package frc.robot.dashboard;
 
+import java.awt.*;
 import java.util.Map;
 
+import edu.wpi.cscore.CvSource;
+import edu.wpi.cscore.VideoMode;
+import edu.wpi.cscore.VideoSource;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -9,6 +13,9 @@ import edu.wpi.first.wpilibj.shuffleboard.*;
 
 import frc.robot.Robot;
 import frc.robot.subsystems.Hardware;
+import javafx.scene.effect.ImageInput;
+import org.opencv.core.Mat;
+import org.opencv.video.Video;
 
 /**
  * The class that all tabs derive from.
@@ -118,13 +125,14 @@ abstract class HardwareTab extends DashboardTab {
 
         frontLeft = encoders.add("Front Left", 0.0).withSize(5, 1).withPosition(0, 0).getEntry();
         frontRight = encoders.add("Front Right", 0.0).withSize(5, 1).withPosition(0, 1).getEntry();
+
     }
 
     @Override
     void update(Robot robot) {
         robotTime.getEntry().setString(Long.toString(robot.getRobotTime()));
-        frontLeft.setValue(Hardware.drivetrain.getFl().getEncoder().getPosition());
-        frontRight.setValue(Hardware.drivetrain.getFr().getEncoder().getPosition());
+        frontLeft.setValue(Hardware.drivetrain.leftEncoder());
+        frontRight.setValue(Hardware.drivetrain.rightEncoder());
     }
 }
 
