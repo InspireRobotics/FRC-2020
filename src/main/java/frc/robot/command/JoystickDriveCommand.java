@@ -13,7 +13,7 @@ import frc.robot.subsystems.Hardware;
 public class JoystickDriveCommand extends CommandBase {
 
     public JoystickDriveCommand() {
-        addRequirements(Hardware.drivetrain);
+        addRequirements(Hardware.drivetrain, Hardware.hopper);
     }
 
     /**
@@ -21,6 +21,8 @@ public class JoystickDriveCommand extends CommandBase {
      */
     @Override
     public void execute() {
+        Hardware.hopper.runIntake();
+
         XboxController joystick = Constants.Joysticks.drive;
 
         double left = joystick.getRawAxis(1);

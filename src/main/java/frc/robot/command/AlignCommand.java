@@ -70,6 +70,5 @@ public class AlignCommand extends CommandBase {
     @Override
     public void end(boolean interrupted) {
         Hardware.drivetrain.disable();
-        Hardware.drivetrain.flushError();
     }
 }

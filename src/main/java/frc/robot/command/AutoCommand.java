@@ -7,8 +7,8 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
  */
 public class AutoCommand extends SequentialCommandGroup {
     public AutoCommand() {
-        addCommands(new DistanceDriveCommand(-20), new AlignCommand(), // TODO: Replace with
-                                                                       // ScoreCommand
+        addCommands(new DistanceDriveCommand(-20), new AlignCommand(),
+                // TODO: Replace AlignCommand with ScoreCommand
                 new DistanceDriveCommand(-50));
     }
 }

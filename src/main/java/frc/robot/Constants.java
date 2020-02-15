@@ -51,7 +51,8 @@ public class Constants {
         public static final double COUNTS_TO_INCHES_DRIVETRAIN = (5.5 * Math.PI) / 10.75 / 1.1;
         public static final double MAX_RPM = 3500; // Maximum RPM used in PID-controlled
                                                    // applications
-        public static final double COUNTS_TO_ROTATIONS_STWLIFT = 1 / 42 / 10; // 42 counts per rot, 10:1 gearbox
+        public static final double COUNTS_TO_ROTATIONS_STWLIFT = 1 / 42 / 10; // 42 counts per rot,
+                                                                              // 10:1 gearbox
     }
 
     public static class Joysticks {
@@ -66,12 +67,11 @@ public class Constants {
     public static class PIXYCAM {
         public static final int NO_CHECKSUM_SYNC = 0xc1ae;
         public static final int CHECKSUM_SYNC = 0xc1af;
+
+        public static final double CENTER_X = 315.0 / 2.0;
     }
 
     public enum COLORS {
-        RED,
-        YELLOW,
-        GREEN,
-        BLUE
+        RED, YELLOW, GREEN, BLUE
     }
 }

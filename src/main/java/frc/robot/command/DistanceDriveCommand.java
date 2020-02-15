@@ -24,10 +24,10 @@ public class DistanceDriveCommand extends CommandBase {
     private boolean onTarget = false;
 
     public DistanceDriveCommand(double inches) {
-        targetLeft = Hardware.drivetrain.leftEncoder() * Constants.ENCODER.COUNTS_TO_INCHES_DRIVETRAIN
-                + inches;
-        targetRight = Hardware.drivetrain.rightEncoder() * Constants.ENCODER.COUNTS_TO_INCHES_DRIVETRAIN
-                + inches;
+        targetLeft = Hardware.drivetrain.leftEncoder()
+                * Constants.ENCODER.COUNTS_TO_INCHES_DRIVETRAIN + inches;
+        targetRight = Hardware.drivetrain.rightEncoder()
+                * Constants.ENCODER.COUNTS_TO_INCHES_DRIVETRAIN + inches;
 
         System.out.println(String.format("Targets: [L:%f.1, R:%f.1]", targetLeft, targetRight));
 
@@ -51,12 +51,13 @@ public class DistanceDriveCommand extends CommandBase {
     @Override
     public void execute() {
 
-        double powerLeft = Math.atan(
-                Hardware.drivetrain.leftEncoder() * Constants.ENCODER.COUNTS_TO_INCHES_DRIVETRAIN - targetLeft)
+        double powerLeft = Math
+                .atan(Hardware.drivetrain.leftEncoder()
+                        * Constants.ENCODER.COUNTS_TO_INCHES_DRIVETRAIN - targetLeft)
                 / (Math.PI / 2);
         double powerRight = Math
-                .atan(Hardware.drivetrain.rightEncoder() * Constants.ENCODER.COUNTS_TO_INCHES_DRIVETRAIN
-                        - targetRight)
+                .atan(Hardware.drivetrain.rightEncoder()
+                        * Constants.ENCODER.COUNTS_TO_INCHES_DRIVETRAIN - targetRight)
                 / (Math.PI / 2);
 
         powerLeft = MathUtil.clamp(Math.abs(powerLeft), POWER.AUTO_MIN, POWER.AUTO_MAX)
@@ -80,7 +81,6 @@ public class DistanceDriveCommand extends CommandBase {
             System.out.println("Reached target!");
         }
         Hardware.drivetrain.disable();
-        Hardware.drivetrain.flushError();
     }
 
     /**
@@ -91,10 +91,11 @@ public class DistanceDriveCommand extends CommandBase {
      */
     @Override
     public boolean isFinished() {
-        if (Math.abs(Hardware.drivetrain.leftEncoder() * Constants.ENCODER.COUNTS_TO_INCHES_DRIVETRAIN
-                - targetLeft) < ERROR
-                && Math.abs(Hardware.drivetrain.rightEncoder() * Constants.ENCODER.COUNTS_TO_INCHES_DRIVETRAIN
-                        - targetRight) < ERROR) {
+        if (Math.abs(
+                Hardware.drivetrain.leftEncoder() * Constants.ENCODER.COUNTS_TO_INCHES_DRIVETRAIN
+                        - targetLeft) < ERROR
+                && Math.abs(Hardware.drivetrain.rightEncoder()
+                        * Constants.ENCODER.COUNTS_TO_INCHES_DRIVETRAIN - targetRight) < ERROR) {
             if (!onTarget) {
                 onTargetTime = System.currentTimeMillis();
                 onTarget = true;

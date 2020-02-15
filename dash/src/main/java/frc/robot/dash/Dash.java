@@ -8,7 +8,7 @@ import edu.wpi.first.shuffleboard.api.plugin.Plugin;
 import edu.wpi.first.shuffleboard.api.widget.ComponentType;
 import edu.wpi.first.shuffleboard.api.widget.WidgetType;
 
-@Description(group = "org.inspirerobotics.frc2020", name = "Dash", version = "0.1.0", summary = "FRC 4283 Custom Plugin")
+@Description(group = "org.inspirerobotics.frc2020", name = "Dash", version = "0.1.1", summary = "FRC 4283 Custom Plugin")
 public class Dash extends Plugin {
 
     @Override
@@ -26,6 +26,7 @@ public class Dash extends Plugin {
     public List<ComponentType> getComponents() {
         return Arrays.asList(WidgetType.forAnnotatedWidget(BooleanCircle.class),
                 WidgetType.forAnnotatedWidget(AllianceBox.class),
-                WidgetType.forAnnotatedWidget(SimpleText.class));
+                WidgetType.forAnnotatedWidget(SimpleText.class),
+                WidgetType.forAnnotatedWidget(BallCounter.class));
     }
 }

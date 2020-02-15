@@ -1,11 +1,7 @@
 package frc.robot.dashboard;
 
-import java.awt.*;
 import java.util.Map;
 
-import edu.wpi.cscore.CvSource;
-import edu.wpi.cscore.VideoMode;
-import edu.wpi.cscore.VideoSource;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -13,9 +9,6 @@ import edu.wpi.first.wpilibj.shuffleboard.*;
 
 import frc.robot.Robot;
 import frc.robot.subsystems.Hardware;
-import javafx.scene.effect.ImageInput;
-import org.opencv.core.Mat;
-import org.opencv.video.Video;
 
 /**
  * The class that all tabs derive from.
@@ -54,6 +47,12 @@ class PreMatchTab extends DashboardTab {
     private SimpleWidget matchNumber;
     private SimpleWidget robotTime;
 
+    /**
+     * Initializes all the widgets necessary for the prematch tab.
+     *
+     * @param robot
+     *            The robot instance
+     */
     @Override
     public void init(Robot robot) {
         fmsWidget = tab.add("FMS Status", DriverStation.getInstance().isFMSAttached())
@@ -74,6 +73,12 @@ class PreMatchTab extends DashboardTab {
                 .withProperties(Map.of("Font size", 72));
     }
 
+    /**
+     * Refreshes the tab with new data.
+     *
+     * @param robot
+     *            The robot instance
+     */
     @Override
     public void update(Robot robot) {
         fmsWidget.getEntry().setBoolean(DriverStation.getInstance().isFMSAttached());
@@ -83,6 +88,11 @@ class PreMatchTab extends DashboardTab {
         robotTime.getEntry().setString(Long.toString(robot.getRobotTime()));
     }
 
+    /**
+     * Gets the current alliance (red or blue)
+     *
+     * @return Boolean indicating driver station
+     */
     private boolean isBlueDS() {
         return DriverStation.getInstance().getAlliance() == Alliance.Blue;
     }
@@ -102,32 +112,44 @@ class PreMatchTab extends DashboardTab {
 abstract class HardwareTab extends DashboardTab {
 
     private SimpleWidget robotTime;
-    private ShuffleboardLayout encoders;
 
     private NetworkTableEntry frontLeft;
     private NetworkTableEntry frontRight;
 
+    /**
+     * Initializes all widgets needed for the tabs which extend HardwareTab
+     *
+     * @param robot
+     *            The robot instance
+     */
     @Override
     void init(Robot robot) {
         var subsystemLayout = tab.getLayout("Subsystems", BuiltInLayouts.kList).withSize(4, 4)
                 .withPosition(0, 0);
 
-        robot.getHardware().getSubsystems().forEach(subsystem -> {
-            subsystemLayout.add(subsystem.getName(), subsystem);
-        });
+        robot.getHardware().getSubsystems()
+                .forEach(subsystem -> subsystemLayout.add(subsystem.getName(), subsystem));
 
         tab.add("Drive", Hardware.drivetrain.getDrive()).withPosition(4, 0).withSize(4, 3);
         robotTime = tab.add("Robot Time", Long.toString(robot.getRobotTime())).withPosition(4, 3)
                 .withSize(4, 1).withWidget("Simple Text");
 
-        encoders = tab.getLayout("Encoders", BuiltInLayouts.kGrid).withSize(3, 2).withPosition(8,
-                0);
+        ShuffleboardLayout encoders = tab.getLayout("Encoders", BuiltInLayouts.kGrid).withSize(3, 2)
+                .withPosition(8, 0);
 
         frontLeft = encoders.add("Front Left", 0.0).withSize(5, 1).withPosition(0, 0).getEntry();
         frontRight = encoders.add("Front Right", 0.0).withSize(5, 1).withPosition(0, 1).getEntry();
 
+        tab.add("Hopper Load", Hardware.hopper.ballCount()).withPosition(4, 3).withSize(2, 1)
+                .withWidget("BallCounter");
     }
 
+    /**
+     * Refreshes the widgets for the hardware tabs.
+     *
+     * @param robot
+     *            The robot instance
+     */
     @Override
     void update(Robot robot) {
         robotTime.getEntry().setString(Long.toString(robot.getRobotTime()));
@@ -136,6 +158,9 @@ abstract class HardwareTab extends DashboardTab {
     }
 }
 
+/**
+ * A direct extension of HardwareTab, only fully overrides "getName".
+ */
 class AutoTab extends HardwareTab {
 
     @Override
@@ -154,6 +179,9 @@ class AutoTab extends HardwareTab {
     }
 }
 
+/**
+ * A direct extension of HardwareTab, only fully overrides "getName"
+ */
 class TeleOpTab extends HardwareTab {
 
     @Override

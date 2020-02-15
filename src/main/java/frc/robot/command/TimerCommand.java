@@ -3,7 +3,8 @@ package frc.robot.command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /**
- * Ends after a certain amount of time has elapsed. Used as the base for other commands or in command groups.
+ * Ends after a certain amount of time has elapsed. Used as the base for other
+ * commands or in command groups.
  */
 public class TimerCommand extends CommandBase {
 

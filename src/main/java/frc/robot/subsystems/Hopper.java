@@ -1,45 +1,63 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.DigitalOutput;
-import edu.wpi.first.wpilibj.I2C;
-import edu.wpi.first.wpilibj.Spark;
-
-import edu.wpi.first.wpilibj.drive.Vector2d;
-import frc.robot.Constants;
-import frc.robot.Robot;
-
 import java.io.IOException;
-import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
+
+import edu.wpi.first.wpilibj.DigitalOutput;
+import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.Spark;
+import edu.wpi.first.wpilibj.drive.Vector2d;
+
+import frc.robot.Constants;
+import frc.robot.Robot;
+
+/**
+ * The collection and hopper subsystem.
+ *
+ * Responsible for collecting balls, managing them in storage, and feeding them
+ * to the Shooter subsystem.
+ */
 public class Hopper extends SubsystemBase {
 
     private final long EJECT_TIME_MS = 200;
     private final long BLOCK_REFRESH = 200;
 
-    public final Spark intake;
-    public final Spark hopperHold;
-    public final Spark hopperLift;
-    public final Spark hopperSpinBottom;
-    public final Spark hopperSpinTop;
-    public final DigitalOutput intakeGate;
-    public final I2C pixycam;
+    private final VictorSPX intake;
+    private final VictorSPX hopperHold;
+    private final Spark hopperLift;
+    private final Spark hopperSpinBottom;
+    private final Spark hopperSpinTop;
+    private final DigitalOutput intakeGate;
+    private final I2C pixycam;
 
-    private char m_ballCount;
+    private byte m_ballCount;
     private long removeStart;
     private long blockTimeout;
 
+    /**
+     * Default constructor
+     */
     public Hopper() {
-        intake = new Spark(Constants.CAN.INTAKE);
-        hopperHold = new Spark(Constants.CAN.HOPPER_HOLD);
+        intake = new VictorSPX(Constants.CAN.INTAKE);
+        hopperHold = new VictorSPX(Constants.CAN.HOPPER_HOLD);
         hopperLift = new Spark(Constants.CAN.HOPPER_LIFT);
         hopperSpinBottom = new Spark(Constants.CAN.HOPPER_SPIN_BOTTOM);
         hopperSpinTop = new Spark(Constants.CAN.HOPPER_SPIN_TOP);
+
         intakeGate = new DigitalOutput(Constants.DIO.PHOTOGATE);
         pixycam = new I2C(I2C.Port.kMXP, Constants.I2C.PIXYCAM);
     }
 
+    /**
+     * Initializes the subsystem for use with the robot.
+     * 
+     * @param robot
+     *            The robot instance.
+     */
     @Override
     public void init(Robot robot) {
         m_ballCount = 0;
@@ -47,26 +65,35 @@ public class Hopper extends SubsystemBase {
 
     }
 
+    /**
+     * Disables the hopper. Stops all motors in the subsystems.
+     */
     @Override
     public void disable() {
-        intake.set(0);
-        hopperHold.set(0);
+        intake.set(ControlMode.PercentOutput, 0);
+        hopperHold.set(ControlMode.PercentOutput, 0);
         hopperLift.set(0);
         hopperSpinBottom.set(0);
         hopperSpinTop.set(0);
     }
 
+    /**
+     * Resets the motors as per the safety regulations.
+     */
     @Override
     public void periodic() {
-        intake.set(0);
-        hopperHold.set(0);
+        intake.set(ControlMode.PercentOutput, 0);
+        hopperHold.set(ControlMode.PercentOutput, 0);
         hopperLift.set(0);
         hopperSpinBottom.set(0);
         hopperSpinTop.set(0);
     }
 
+    /**
+     * Sets motor values for the hopper as appropriate. Must be called separately
+     * from and after periodic().
+     */
     public void runHopper() {
-        intake.set(1);
         switch (m_ballCount) {
         case 1:
         case 2:
@@ -76,10 +103,10 @@ public class Hopper extends SubsystemBase {
             hopperLift.set(1);
         case 4:
         case 5:
-            hopperHold.set(1);
+            hopperHold.set(ControlMode.PercentOutput, 1);
             break;
         default:
-            hopperHold.set(0);
+            hopperHold.set(ControlMode.PercentOutput, 0);
             hopperLift.set(0);
             hopperSpinBottom.set(0);
             hopperSpinTop.set(0);
@@ -99,23 +126,38 @@ public class Hopper extends SubsystemBase {
         }
     }
 
+    /**
+     * Eject a ball from the subsystem, and deduct one ball from the counter.
+     */
     public void removeBall() {
         removeStart = (removeStart < System.currentTimeMillis()) ? System.currentTimeMillis()
                 : (removeStart + EJECT_TIME_MS);
         m_ballCount--;
     }
 
+    public void runIntake() {
+        intake.set(ControlMode.PercentOutput, 1);
+    }
 
-    /** Queries the pixycam with a packet, and receives a packet in return.
-     * @param request Bytes to send to the Pixy. NOTE THAT THIS METHOD ASSUMES CORRECT FORMATTING!
-     * @return Returns the response data with checksum applied. NOTE THAT THESE ARE THE RAW BYTES, YOU ARE RESPONSIBLE FOR PROPER INTERPRETATION!
+    public byte ballCount() {
+        return m_ballCount;
+    }
+
+    /**
+     * Queries the pixycam with a packet, and receives a packet in return.
+     * 
+     * @param request
+     *            Bytes to send to the Pixy. NOTE THAT THIS METHOD ASSUMES CORRECT
+     *            FORMATTING!
+     * @return Returns the response data with checksum applied. NOTE THAT THESE ARE
+     *         THE RAW BYTES, YOU ARE RESPONSIBLE FOR PROPER INTERPRETATION!
      */
     public byte[] queryCam(byte[] request) throws IOException {
         pixycam.writeBulk(request);
 
         ByteBuffer header = ByteBuffer.allocate(2);
         pixycam.readOnly(header, 2);
-        header = header.order(ByteOrder.LITTLE_ENDIAN);
+        header.order(ByteOrder.LITTLE_ENDIAN);
 
         if (header.getInt() == Constants.PIXYCAM.CHECKSUM_SYNC) {
             ByteBuffer padding = ByteBuffer.allocate(2);
@@ -123,7 +165,7 @@ public class Hopper extends SubsystemBase {
 
             ByteBuffer checkSum = ByteBuffer.allocate(2);
             pixycam.readOnly(checkSum, 2);
-            checkSum = checkSum.order(ByteOrder.LITTLE_ENDIAN);
+            checkSum.order(ByteOrder.LITTLE_ENDIAN);
 
             if (padding.get(1) != 0) {
                 ByteBuffer output = ByteBuffer.allocate(padding.get(1));
@@ -146,15 +188,33 @@ public class Hopper extends SubsystemBase {
         }
     }
 
-    //TODO: Make this less jank
+    /**
+     * Gets the position of the ball relative to the PixyCam
+     *
+     * FIXME: Is currently untested, and may fail.
+     *
+     * @return Returns a vector representing the position of the ball in the
+     *         coordinates of the PixyCam's view.
+     * @throws IOException
+     *             The PixyCam may fail to respond, and the exception should be
+     *             caught by the caller.
+     *
+     *             TODO: Update with code filter for blocks, multiple blocks are
+     *             counted as seen with this GitHub post:
+     *             https://github.com/olentangyfrc/DeepSpace-2019/issues/234#issuecomment-460079274
+     */
     public Vector2d ballPosition() throws IOException {
-        ByteBuffer request = ByteBuffer.allocate(6);
-        request.put(new byte[]{(byte) 174, (byte) 193, (byte) 32, (byte) 2, (byte) 255, (byte) 1});
-        byte[] result = queryCam(request.array());
+        byte[] result = queryCam(
+                new byte[] { (byte) 174, (byte) 193, (byte) 32, (byte) 2, (byte) 255, (byte) 1 });
         return new Vector2d(ByteBuffer.wrap(result, 2, 2).order(ByteOrder.LITTLE_ENDIAN).getInt(),
                 ByteBuffer.wrap(result, 4, 2).order(ByteOrder.LITTLE_ENDIAN).getInt());
     }
 
+    /**
+     * Gets the name of the subsystem as a String.
+     * 
+     * @return Returns the name of the subsystem as a String. Always "Hopper".
+     */
     @Override
     public String getSubsystemName() {
         return "Hopper";

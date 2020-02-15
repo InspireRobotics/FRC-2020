@@ -4,7 +4,6 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
-import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
 import frc.robot.Constants;
@@ -21,57 +20,48 @@ public class Drivetrain extends SubsystemBase {
 
     private CANSparkMax fl;
     private CANSparkMax fr;
-    private CANSparkMax bl;
-    private CANSparkMax br;
-
-    private PIDController leftControl;
-    private PIDController rightControl;
 
     private DifferentialDrive drive;
 
+    /**
+     * Initializes the tank drivetrain on the robot
+     * 
+     * @param robot
+     *            The robot instance
+     */
     @Override
     public void init(Robot robot) {
+
+        // Get the motors
         fl = new CANSparkMax(Constants.CAN.DRIVE_FL, MotorType.kBrushless);
         fr = new CANSparkMax(Constants.CAN.DRIVE_FR, MotorType.kBrushless);
-        bl = new CANSparkMax(Constants.CAN.DRIVE_BL, MotorType.kBrushless);
-        br = new CANSparkMax(Constants.CAN.DRIVE_BR, MotorType.kBrushless);
+        CANSparkMax bl = new CANSparkMax(Constants.CAN.DRIVE_BL, MotorType.kBrushless);
+        CANSparkMax br = new CANSparkMax(Constants.CAN.DRIVE_BR, MotorType.kBrushless);
 
-        /*
-         * fl.getEncoder().setPositionConversionFactor(Constants.ENCODER.
-         * COUNTS_TO_INCHES);
-         * fr.getEncoder().setPositionConversionFactor(Constants.ENCODER.
-         * COUNTS_TO_INCHES);
-         * bl.getEncoder().setPositionConversionFactor(Constants.ENCODER.
-         * COUNTS_TO_INCHES);
-         * br.getEncoder().setPositionConversionFactor(Constants.ENCODER.
-         * COUNTS_TO_INCHES);
-         */
-
+        // Reset the encoders
         fl.getEncoder().setPosition(0.0);
         fr.getEncoder().setPosition(0.0);
-        bl.getEncoder().setPosition(0.0);
-        br.getEncoder().setPosition(0.0);
 
+        // Invert the motors as needed
         fl.setInverted(true);
         bl.setInverted(true);
 
         fr.setInverted(true);
         br.setInverted(true);
 
+        // Group the motors and assign them to the drivetrain
         SpeedControllerGroup left = new SpeedControllerGroup(fl, bl);
         SpeedControllerGroup right = new SpeedControllerGroup(fr, br);
 
-        leftControl = new PIDController(2, 0.5, 1);
-        rightControl = new PIDController(2, 0.5, 1);
-
-        leftControl.setTolerance(10);
-        rightControl.setTolerance(10);
-
         drive = new DifferentialDrive(left, right);
 
+        // Bind joystick control to the drivetrain
         setDefaultCommand(new JoystickDriveCommand());
     }
 
+    /**
+     * Resets power output as per safety regulations.
+     */
     @Override
     public void periodic() {
         // Reset the power to zero every loop
@@ -79,35 +69,61 @@ public class Drivetrain extends SubsystemBase {
         setPower(0, 0);
     }
 
+    /**
+     * Disables the motors upon disabling the drivetrain
+     */
     @Override
     public void disable() {
+        // Set the power to zero, just in case periodic didn't set it.
         setPower(0, 0);
     }
 
+    /**
+     * Sets the power output to the drivetrain as a percentage
+     * 
+     * @param left
+     *            PWM pulse width for left two motors (0.0-1.0)
+     * @param right
+     *            PWM pulse width for right two motors (0.0-1.0)
+     */
     public void setPower(double left, double right) {
         drive.tankDrive(left, right);
     }
 
-    public void flushError() {
-        leftControl.reset();
-        rightControl.reset();
-        fl.getEncoder().setPosition(0);
-        fr.getEncoder().setPosition(0);
-    }
-
+    /**
+     * Gets the name of the subsystem of the robot
+     * 
+     * @return The name of the system.
+     */
     @Override
     String getSubsystemName() {
         return "Drivetrain";
     }
 
+    /**
+     * Gets the drive object of the drivetrain; Should not be used for actual
+     * driving.
+     * 
+     * @return The DifferentialDrive bound to the drivetrain
+     */
     public DifferentialDrive getDrive() {
         return drive;
     }
 
+    /**
+     * Gets the encoder position of the front left motor.
+     * 
+     * @return The current position of the front left encoder
+     */
     public double leftEncoder() {
         return -fl.getEncoder().getPosition();
     }
 
+    /**
+     * Gets the encoder position of the front right motor.
+     * 
+     * @return The current position of the front right encoder
+     */
     public double rightEncoder() {
         return fr.getEncoder().getPosition();
     }

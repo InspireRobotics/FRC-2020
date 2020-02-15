@@ -1,22 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.image.ImageView?>
-<?import edu.wpi.first.shuffleboard.api.components.ResizableImageView?>
-<?import javafx.scene.image.Image?>
-<?import java.util.ArrayList?>
-
-<BorderPane fx:id="root" minHeight="32" minWidth="64" prefHeight="128" prefWidth="256" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="frc.robot.dash.SimpleText">
+<?import javafx.scene.layout.BorderPane?>
+<BorderPane fx:id="root" minHeight="32" minWidth="64" prefHeight="128" prefWidth="256" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="frc.robot.dash.BallCounter">
     <center>
-        <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="200.0" prefWidth="400.0" BorderPane.alignment="CENTER">
-            <children>
-                <ResizableImageView fx:id="ballDisplay" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                    <Image/>
-                </ResizableImageView>
-            </children>
-        </AnchorPane>
+        <ImageView fx:id="image" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER"/>
     </center>
 </BorderPane>
