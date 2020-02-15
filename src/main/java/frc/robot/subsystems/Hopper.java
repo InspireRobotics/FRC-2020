@@ -1,19 +1,20 @@
 package frc.robot.subsystems;
 
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
+import java.util.ArrayList;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
 import edu.wpi.first.wpilibj.DigitalOutput;
-import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.drive.Vector2d;
 
 import frc.robot.Constants;
 import frc.robot.Robot;
+
+import io.github.pseudoresonance.pixy2api.Pixy2;
+import io.github.pseudoresonance.pixy2api.Pixy2CCC;
+import io.github.pseudoresonance.pixy2api.links.I2CLink;
 
 /**
  * The collection and hopper subsystem.
@@ -32,7 +33,7 @@ public class Hopper extends SubsystemBase {
     private final Spark hopperSpinBottom;
     private final Spark hopperSpinTop;
     private final DigitalOutput intakeGate;
-    private final I2C pixycam;
+    private final Pixy2 pixycam;
 
     private byte m_ballCount;
     private long removeStart;
@@ -49,7 +50,8 @@ public class Hopper extends SubsystemBase {
         hopperSpinTop = new Spark(Constants.CAN.HOPPER_SPIN_TOP);
 
         intakeGate = new DigitalOutput(Constants.DIO.PHOTOGATE);
-        pixycam = new I2C(I2C.Port.kMXP, Constants.I2C.PIXYCAM);
+        pixycam = Pixy2.createInstance(new I2CLink());
+        pixycam.init();
     }
 
     /**
@@ -144,70 +146,32 @@ public class Hopper extends SubsystemBase {
     }
 
     /**
-     * Queries the pixycam with a packet, and receives a packet in return.
-     * 
-     * @param request
-     *            Bytes to send to the Pixy. NOTE THAT THIS METHOD ASSUMES CORRECT
-     *            FORMATTING!
-     * @return Returns the response data with checksum applied. NOTE THAT THESE ARE
-     *         THE RAW BYTES, YOU ARE RESPONSIBLE FOR PROPER INTERPRETATION!
-     */
-    public byte[] queryCam(byte[] request) throws IOException {
-        pixycam.writeBulk(request);
-
-        ByteBuffer header = ByteBuffer.allocate(2);
-        pixycam.readOnly(header, 2);
-        header.order(ByteOrder.LITTLE_ENDIAN);
-
-        if (header.getInt() == Constants.PIXYCAM.CHECKSUM_SYNC) {
-            ByteBuffer padding = ByteBuffer.allocate(2);
-            pixycam.readOnly(padding, 2);
-
-            ByteBuffer checkSum = ByteBuffer.allocate(2);
-            pixycam.readOnly(checkSum, 2);
-            checkSum.order(ByteOrder.LITTLE_ENDIAN);
-
-            if (padding.get(1) != 0) {
-                ByteBuffer output = ByteBuffer.allocate(padding.get(1));
-                pixycam.readOnly(output, 0);
-
-                int sum = 0;
-                for (byte b : output.array()) {
-                    sum += b;
-                }
-
-                if (checkSum.getInt() != sum) {
-                    throw new IOException("Checksum did not equate to received data.");
-                }
-                return output.array();
-            } else {
-                return null;
-            }
-        } else {
-            throw new IOException("Pixycam responded with bad header");
-        }
-    }
-
-    /**
-     * Gets the position of the ball relative to the PixyCam
-     *
-     * FIXME: Is currently untested, and may fail.
+     * Gets the position of the largest ball relative to the PixyCam
      *
      * @return Returns a vector representing the position of the ball in the
      *         coordinates of the PixyCam's view.
-     * @throws IOException
-     *             The PixyCam may fail to respond, and the exception should be
-     *             caught by the caller.
-     *
-     *             TODO: Update with code filter for blocks, multiple blocks are
-     *             counted as seen with this GitHub post:
-     *             https://github.com/olentangyfrc/DeepSpace-2019/issues/234#issuecomment-460079274
      */
-    public Vector2d ballPosition() throws IOException {
-        byte[] result = queryCam(
-                new byte[] { (byte) 174, (byte) 193, (byte) 32, (byte) 2, (byte) 255, (byte) 1 });
-        return new Vector2d(ByteBuffer.wrap(result, 2, 2).order(ByteOrder.LITTLE_ENDIAN).getInt(),
-                ByteBuffer.wrap(result, 4, 2).order(ByteOrder.LITTLE_ENDIAN).getInt());
+    public Vector2d ballPosition() {
+        ArrayList<Pixy2CCC.Block> blocks = pixycam.getCCC().getBlocks();
+        if (blocks.size() > 0) {
+            Pixy2CCC.Block largest = null;
+            for (Pixy2CCC.Block temp : blocks) {
+                // Check aspect ratio
+                if ((float) temp.getWidth() / temp.getHeight() > 1.2
+                        || (float) temp.getHeight() / temp.getWidth() < 0.8) {
+                    continue;
+                }
+                if (largest == null || (temp.getWidth() * temp.getHeight() > largest.getWidth()
+                        * largest.getHeight())) {
+                    largest = temp;
+                }
+            }
+            if (largest != null) {
+                return new Vector2d(largest.getX(), largest.getY());
+            }
+        }
+
+        return null;
     }
 
     /**

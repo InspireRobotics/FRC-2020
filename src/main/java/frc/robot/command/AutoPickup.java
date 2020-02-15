@@ -1,7 +1,5 @@
 package frc.robot.command;
 
-import java.io.IOException;
-
 import edu.wpi.first.wpilibj.drive.Vector2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpiutil.math.MathUtil;
@@ -42,18 +40,14 @@ public class AutoPickup extends CommandBase {
     @Override
     public void execute() {
         hopper.runIntake();
-        try {
-            Vector2d pos = hopper.ballPosition();
-            double offset = (pos.x - Constants.PIXYCAM.CENTER_X) / Constants.PIXYCAM.CENTER_X;
+        Vector2d pos = hopper.ballPosition();
+        double offset = (pos.x - Constants.PIXYCAM.CENTER_X) / Constants.PIXYCAM.CENTER_X;
 
-            drivetrain.setPower(
-                    MathUtil.clamp(Math.atan(offset) - Constants.POWER.AUTO_MIN,
-                            -Constants.POWER.AUTO_MAX, Constants.POWER.AUTO_MAX),
-                    MathUtil.clamp(-Math.atan(offset) - Constants.POWER.AUTO_MIN,
-                            -Constants.POWER.AUTO_MAX, Constants.POWER.AUTO_MAX));
-        } catch (IOException e) {
-
-        }
+        drivetrain.setPower(
+                MathUtil.clamp(Math.atan(offset) - Constants.POWER.AUTO_MIN,
+                        -Constants.POWER.AUTO_MAX, Constants.POWER.AUTO_MAX),
+                MathUtil.clamp(-Math.atan(offset) - Constants.POWER.AUTO_MIN,
+                        -Constants.POWER.AUTO_MAX, Constants.POWER.AUTO_MAX));
     }
 
     /**
