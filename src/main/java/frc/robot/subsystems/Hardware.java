@@ -10,30 +10,46 @@ import frc.robot.Robot;
  */
 public class Hardware {
 
-    public static final Drivetrain drivetrain = new Drivetrain();
-    public static final Camera camera = new Camera();
-
     /**
-     * A list of subsystems on the robot. All subsystems must be added to this!
+     * The drivetrain of the robot.
      */
-    private final List<SubsystemBase> subsystems = Arrays.asList(drivetrain, camera);
+    public static final Drivetrain drivetrain = new Drivetrain();
+    /**
+     * The shooter of the robot.
+     */
+    public static final Shooter shooter = new Shooter();
+    /**
+     * The collection system and hopper of the robot.
+     */
+    public static final Hopper hopper = new Hopper();
+    /**
+     * The wheel spinner of the robot.
+     */
+    public static final SpinTheWheel wheelSpinner = new SpinTheWheel();
 
     /**
-     * Initializes all of the subsytems on the robot
+     * A list of subsystems on the robot. All subsystems that should be run must be
+     * added to this!
+     */
+    private final List<SubsystemBase> subsystems = Arrays.asList(drivetrain, shooter, hopper,
+            wheelSpinner);
+
+    /**
+     * Initializes all of the subsystems on the robot
      */
     public void init(Robot robot) {
         subsystems.forEach(subsystem -> subsystem.init(robot));
     }
 
     /**
-     * Disables all of the subsytems on the robot
+     * Disables all of the subsystems on the robot
      */
     public void disable() {
         subsystems.forEach(SubsystemBase::disable);
     }
 
     /**
-     * the list of subsystems on the robot
+     * The list of subsystems on the robot
      */
     public List<SubsystemBase> getSubsystems() {
         return subsystems;
