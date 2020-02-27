@@ -31,7 +31,7 @@ public class Hardware {
      * A list of subsystems on the robot. All subsystems that should be run must be
      * added to this!
      */
-    private final List<SubsystemBase> subsystems = Arrays.asList(drivetrain, shooter, hopper,
+    private final List<SubsystemBase> subsystems = Arrays.asList(drivetrain, hopper, shooter,
             wheelSpinner);
 
     /**

@@ -12,7 +12,7 @@ import frc.robot.command.JoystickDriveCommand;
 
 /**
  * The drivetrain on the robot.
- * 
+ *
  * This is responsible for managing the state of the drivetrain, including
  * encoder values (velocity, position, etc.)
  */
@@ -21,11 +21,12 @@ public class Drivetrain extends SubsystemBase {
     private CANSparkMax fl;
     private CANSparkMax fr;
 
-    private DifferentialDrive drive;
+    private CANSparkMax bl;
+    private CANSparkMax br;
 
     /**
      * Initializes the tank drivetrain on the robot
-     * 
+     *
      * @param robot
      *            The robot instance
      */
@@ -35,25 +36,8 @@ public class Drivetrain extends SubsystemBase {
         // Get the motors
         fl = new CANSparkMax(Constants.CAN.DRIVE_FL, MotorType.kBrushless);
         fr = new CANSparkMax(Constants.CAN.DRIVE_FR, MotorType.kBrushless);
-        CANSparkMax bl = new CANSparkMax(Constants.CAN.DRIVE_BL, MotorType.kBrushless);
-        CANSparkMax br = new CANSparkMax(Constants.CAN.DRIVE_BR, MotorType.kBrushless);
-
-        // Reset the encoders
-        fl.getEncoder().setPosition(0.0);
-        fr.getEncoder().setPosition(0.0);
-
-        // Invert the motors as needed
-        fl.setInverted(true);
-        bl.setInverted(true);
-
-        fr.setInverted(true);
-        br.setInverted(true);
-
-        // Group the motors and assign them to the drivetrain
-        SpeedControllerGroup left = new SpeedControllerGroup(fl, bl);
-        SpeedControllerGroup right = new SpeedControllerGroup(fr, br);
-
-        drive = new DifferentialDrive(left, right);
+        bl = new CANSparkMax(Constants.CAN.DRIVE_BL, MotorType.kBrushless);
+        br = new CANSparkMax(Constants.CAN.DRIVE_BR, MotorType.kBrushless);
 
         // Bind joystick control to the drivetrain
         setDefaultCommand(new JoystickDriveCommand());
@@ -80,19 +64,23 @@ public class Drivetrain extends SubsystemBase {
 
     /**
      * Sets the power output to the drivetrain as a percentage
-     * 
+     *
      * @param left
      *            PWM pulse width for left two motors (0.0-1.0)
      * @param right
      *            PWM pulse width for right two motors (0.0-1.0)
      */
     public void setPower(double left, double right) {
-        drive.tankDrive(left, right);
+        fl.set(left);
+        bl.set(left);
+
+        fr.set(right);
+        br.set(right);
     }
 
     /**
      * Gets the name of the subsystem of the robot
-     * 
+     *
      * @return The name of the system.
      */
     @Override
@@ -101,18 +89,8 @@ public class Drivetrain extends SubsystemBase {
     }
 
     /**
-     * Gets the drive object of the drivetrain; Should not be used for actual
-     * driving.
-     * 
-     * @return The DifferentialDrive bound to the drivetrain
-     */
-    public DifferentialDrive getDrive() {
-        return drive;
-    }
-
-    /**
      * Gets the encoder position of the front left motor.
-     * 
+     *
      * @return The current position of the front left encoder
      */
     public double leftEncoder() {
@@ -121,7 +99,7 @@ public class Drivetrain extends SubsystemBase {
 
     /**
      * Gets the encoder position of the front right motor.
-     * 
+     *
      * @return The current position of the front right encoder
      */
     public double rightEncoder() {

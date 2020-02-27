@@ -1,17 +1,25 @@
 package frc.robot.subsystems;
 
+import com.revrobotics.ColorMatch;
+import com.revrobotics.ColorSensorV3;
+
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Spark;
+import edu.wpi.first.wpilibj.util.Color;
 
 import frc.robot.Constants;
 import frc.robot.Robot;
 
 public class SpinTheWheel extends SubsystemBase {
 
-    private Spark lift;
+    private DoubleSolenoid lift;
     private Spark spin;
 
     // TODO: Add color sensor!
+
+    //private ColorSensorV3 colorSensorV3;
+    private final ColorMatch match = new ColorMatch();
 
     private boolean lifted = false;
     private double liftTarget = 0;
@@ -25,16 +33,24 @@ public class SpinTheWheel extends SubsystemBase {
      */
     @Override
     void init(Robot robot) {
-        lift = new Spark(Constants.CAN.SPW_LIFT);
+        match.addColorMatch(Constants.COLOR_SENSOR.kBlueTarget);
+        match.addColorMatch(Constants.COLOR_SENSOR.kGreenTarget);
+        match.addColorMatch(Constants.COLOR_SENSOR.kRedTarget);
+        match.addColorMatch(Constants.COLOR_SENSOR.kYellowTarget);
+
+        lift = new DoubleSolenoid(1, Constants.PNEUMATICS.FLIP_SPIN_01,
+                Constants.PNEUMATICS.FLIP_SPIN_02);
         spin = new Spark(Constants.CAN.SPW_SPIN);
+
+        //colorSensorV3 = new ColorSensorV3(Constants.COLOR_SENSOR.colorPort);
     }
 
     /**
      * Disables the mechanism
      */
     @Override
-    void disable() {
-        lift.set(0);
+    public void disable() {
+//        lift.close();
         spin.set(0);
     }
 
@@ -43,24 +59,28 @@ public class SpinTheWheel extends SubsystemBase {
      */
     @Override
     public void periodic() {
-        lift.set(0);
         spin.set(0);
 
         if (color == null) {
             String rawColor = DriverStation.getInstance().getGameSpecificMessage();
             if (rawColor.length() > 0) {
+
+                // NOTE: Our target color should be a quarter turn off of the actual color to
+                // match. Also note that
+                // due to the arrangement of colors spin direction is ambiguous.
+
                 switch (rawColor.charAt(0)) {
                 case 'R':
-                    color = Constants.COLORS.RED;
+                    color = Constants.COLORS.BLUE;
                     break;
                 case 'Y':
-                    color = Constants.COLORS.YELLOW;
-                    break;
-                case 'G':
                     color = Constants.COLORS.GREEN;
                     break;
+                case 'G':
+                    color = Constants.COLORS.YELLOW;
+                    break;
                 case 'B':
-                    color = Constants.COLORS.BLUE;
+                    color = Constants.COLORS.RED;
                     break;
                 default:
                     System.out.println("GOT CORRUPT DATA");
@@ -75,8 +95,7 @@ public class SpinTheWheel extends SubsystemBase {
      */
     public void raise() {
         if (!lifted) {
-            liftTarget = lift.getPosition() * Constants.ENCODER.COUNTS_TO_ROTATIONS_STWLIFT
-                    + 1.0 / 4;
+            lift.set(DoubleSolenoid.Value.kReverse);
             lifted = true;
         }
     }
@@ -86,8 +105,16 @@ public class SpinTheWheel extends SubsystemBase {
      */
     public void lower() {
         if (lifted) {
-            liftTarget = lift.getPosition() * Constants.ENCODER.COUNTS_TO_ROTATIONS_STWLIFT
-                    - 1.0 / 4;
+            lift.set(DoubleSolenoid.Value.kForward);
+            lifted = false;
+        }
+    }
+
+    public void toggle() {
+        if (!lifted) {
+            raise();
+        } else {
+            lower();
         }
     }
 
@@ -96,14 +123,13 @@ public class SpinTheWheel extends SubsystemBase {
      */
     public void run() {
         double bias = lifted ? 0.2 : -0.2;
-        lift.set(Math.atan(lift.getPosition() - liftTarget) * 2 / Math.PI + bias);
 
         if (color != null) {
-            if (false /* COLOR SENSOR CODE HERE */) {
+            if (getColor() != color) {
                 spin.set(1);
             }
         } else {
-            if (lifted && Math.abs(lift.getPosition() - liftTarget) < 0.05) {
+            if (lifted) {
                 spin.set(1);
             }
         }
@@ -115,7 +141,18 @@ public class SpinTheWheel extends SubsystemBase {
      * @return Returns a color from the Constants.COLORS enum.
      */
     public Constants.COLORS getColor() {
-        // TODO: Implement color sensor
+        /*Color match = this.match.matchClosestColor(colorSensorV3.getColor()).color;
+
+        if (match == Constants.COLOR_SENSOR.kBlueTarget) {
+            return Constants.COLORS.BLUE;
+        } else if (match == Constants.COLOR_SENSOR.kGreenTarget) {
+            return Constants.COLORS.GREEN;
+        } else if (match == Constants.COLOR_SENSOR.kRedTarget) {
+            return Constants.COLORS.RED;
+        } else if (match == Constants.COLOR_SENSOR.kYellowTarget) {
+            return Constants.COLORS.YELLOW;
+        }*/
+
         return null;
     }
 

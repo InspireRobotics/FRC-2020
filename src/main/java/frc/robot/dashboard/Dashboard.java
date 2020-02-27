@@ -48,7 +48,7 @@ public class Dashboard {
 
     /**
      * A more robust version of {@link Shuffleboard#selectTab(String)}
-     * 
+     *
      * @param tab
      *            the tab Shuffleboard should switch to.
      */

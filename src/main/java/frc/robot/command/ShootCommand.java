@@ -6,7 +6,7 @@ public class ShootCommand extends TimerCommand {
 
     public ShootCommand(long ms) {
         super(ms);
-        addRequirements(Hardware.shooter, Hardware.hopper);
+        addRequirements(Hardware.shooter);
     }
 
     @Override

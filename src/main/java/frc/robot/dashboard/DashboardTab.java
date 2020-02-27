@@ -22,7 +22,7 @@ public abstract class DashboardTab {
     }
 
     /**
-     * Initalizes all of the widgets, and sets their initial values
+     * Initializes all of the widgets, and sets their initial values
      */
     abstract void init(Robot robot);
 
@@ -106,7 +106,7 @@ class PreMatchTab extends DashboardTab {
 
 /**
  * The base class for AutoTab and TeleOpTab.
- * 
+ *
  * It contains the basic widgets in both tabs such as subsystems, times, etc.
  */
 abstract class HardwareTab extends DashboardTab {
@@ -127,10 +127,11 @@ abstract class HardwareTab extends DashboardTab {
         var subsystemLayout = tab.getLayout("Subsystems", BuiltInLayouts.kList).withSize(4, 4)
                 .withPosition(0, 0);
 
-        robot.getHardware().getSubsystems()
-                .forEach(subsystem -> subsystemLayout.add(subsystem.getName(), subsystem));
+        // robot.getHardware().getSubsystems()
+        // .forEach(subsystem -> subsystemLayout.add(subsystem.getName(),
+        // subsystem));
 
-        tab.add("Drive", Hardware.drivetrain.getDrive()).withPosition(4, 0).withSize(4, 3);
+        //tab.add("Drive", Hardware.drivetrain.getDrive()).withPosition(4, 0).withSize(4, 3);
         robotTime = tab.add("Robot Time", Long.toString(robot.getRobotTime())).withPosition(4, 3)
                 .withSize(4, 1).withWidget("Simple Text");
 
@@ -140,8 +141,9 @@ abstract class HardwareTab extends DashboardTab {
         frontLeft = encoders.add("Front Left", 0.0).withSize(5, 1).withPosition(0, 0).getEntry();
         frontRight = encoders.add("Front Right", 0.0).withSize(5, 1).withPosition(0, 1).getEntry();
 
-        tab.add("Hopper Load", Hardware.hopper.ballCount()).withPosition(4, 3).withSize(2, 1)
-                .withWidget("BallCounter");
+        // tab.add("Hopper Load", Hardware.hopper.ballCount()).withPosition(4,
+        // 3).withSize(2, 1)
+        // .withWidget("BallCounter");
     }
 
     /**

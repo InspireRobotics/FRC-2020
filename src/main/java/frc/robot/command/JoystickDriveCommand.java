@@ -13,7 +13,7 @@ import frc.robot.subsystems.Hardware;
 public class JoystickDriveCommand extends CommandBase {
 
     public JoystickDriveCommand() {
-        addRequirements(Hardware.drivetrain, Hardware.hopper);
+        addRequirements(Hardware.drivetrain);
     }
 
     /**
@@ -21,7 +21,6 @@ public class JoystickDriveCommand extends CommandBase {
      */
     @Override
     public void execute() {
-        Hardware.hopper.runIntake();
 
         XboxController joystick = Constants.Joysticks.drive;
 

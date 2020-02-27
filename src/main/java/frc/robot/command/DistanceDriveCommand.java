@@ -9,7 +9,7 @@ import frc.robot.subsystems.Hardware;
 
 /**
  * Drives straight for a number of inches. Used for debugging commands
- * 
+ *
  * Note: This should not be used for exact driving! Testing has shown
  * significant error upwards of ±20% over large distances.
  */
@@ -36,7 +36,7 @@ public class DistanceDriveCommand extends CommandBase {
 
     /**
      * Always returns false.
-     * 
+     *
      * @return A condition which reports if the command runs while the robot is
      *         disabled.
      */
@@ -71,7 +71,7 @@ public class DistanceDriveCommand extends CommandBase {
     /**
      * Stops the drivetrain and resets the error accumulated in the PID loop, and
      * prints a message if not interrupted.
-     * 
+     *
      * @param interrupted
      *            If the robot was interrupted.
      */
@@ -86,7 +86,7 @@ public class DistanceDriveCommand extends CommandBase {
     /**
      * Checks if the robot is finished by calculating the error from the target, and
      * checking if the robot is within a tolerable range.
-     * 
+     *
      * @return If the robot is finished or not
      */
     @Override

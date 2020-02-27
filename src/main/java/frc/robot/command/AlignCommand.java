@@ -1,5 +1,6 @@
 package frc.robot.command;
 
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpiutil.math.MathUtil;
@@ -28,7 +29,7 @@ public class AlignCommand extends CommandBase {
     @Override
     public void execute() {
         pos = SmartDashboard.getNumber("Contour X", 320);
-        // pos = NetworkTableInstance.getDefault().getEntry("Contour X").getDouble(320);
+        pos = NetworkTableInstance.getDefault().getEntry("Contour X").getDouble(320);
         if (pos > 315 && pos < 325) {
             Hardware.drivetrain.disable();
         } else {
@@ -43,7 +44,7 @@ public class AlignCommand extends CommandBase {
     /**
      * Checks if the robot is aligned and is stable (aka so the robot doesn't
      * overshoot and finish
-     * 
+     *
      * @return Condition indicating the execution loop is finished
      */
     @Override
@@ -65,7 +66,7 @@ public class AlignCommand extends CommandBase {
     /**
      * Preforms resets to ensure the drivetrain is ready to be used by other
      * commands.
-     * 
+     *
      * @param interrupted
      *            - Indicates if the command was interrupted or ended normally.
      */

@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.PWMVictorSPX;
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
 import frc.robot.Constants;
 import frc.robot.Robot;
@@ -11,8 +12,8 @@ import frc.robot.Robot;
  */
 public class Shooter extends SubsystemBase {
 
-    private PWMVictorSPX leftWheel;
-    private PWMVictorSPX rightWheel;
+    private VictorSPX leftWheel;
+    private VictorSPX rightWheel;
 
     /**
      * Responsible for getting the flywheel motors and initializing parameters.
@@ -22,8 +23,8 @@ public class Shooter extends SubsystemBase {
      */
     @Override
     void init(Robot robot) {
-        leftWheel = new PWMVictorSPX(Constants.CAN.SHOOT_L);
-        rightWheel = new PWMVictorSPX(Constants.CAN.SHOOT_R);
+        leftWheel = new VictorSPX(Constants.CAN.SHOOT_L);
+        rightWheel = new VictorSPX(Constants.CAN.SHOOT_R);
 
         rightWheel.setInverted(true);
     }
@@ -34,8 +35,7 @@ public class Shooter extends SubsystemBase {
      */
     @Override
     void disable() {
-        leftWheel.set(0);
-        rightWheel.set(0);
+        setPower(0);
     }
 
     /**
@@ -43,8 +43,7 @@ public class Shooter extends SubsystemBase {
      */
     @Override
     public void periodic() {
-        leftWheel.set(0);
-        rightWheel.set(0);
+        setPower(0);
     }
 
     /**
@@ -54,8 +53,8 @@ public class Shooter extends SubsystemBase {
      *            Power percentage to set the flywheels to.
      */
     public void setPower(double power) {
-        leftWheel.set(power);
-        rightWheel.set(power);
+        leftWheel.set(ControlMode.PercentOutput, power);
+        rightWheel.set(ControlMode.PercentOutput, -power);
     }
 
     /**

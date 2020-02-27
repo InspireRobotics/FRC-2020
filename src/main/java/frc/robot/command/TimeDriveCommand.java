@@ -6,7 +6,7 @@ import frc.robot.subsystems.Hardware;
 
 /**
  * Drives straight for a number of seconds. Used for debugging commands
- * 
+ *
  * Note: This should not be used for exact driving!
  */
 public class TimeDriveCommand extends WaitCommand {

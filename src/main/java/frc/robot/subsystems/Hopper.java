@@ -4,9 +4,12 @@ import java.util.ArrayList;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DigitalOutput;
-import edu.wpi.first.wpilibj.Spark;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.drive.Vector2d;
 
 import frc.robot.Constants;
@@ -26,13 +29,16 @@ public class Hopper extends SubsystemBase {
 
     private final long EJECT_TIME_MS = 200;
     private final long BLOCK_REFRESH = 200;
+    private final double PERCENT_OUTPUT = 1;
 
-    private final VictorSPX intake;
     private final VictorSPX hopperHold;
-    private final Spark hopperLift;
-    private final Spark hopperSpinBottom;
-    private final Spark hopperSpinTop;
-    private final DigitalOutput intakeGate;
+    private final VictorSPX hopperLift;
+    private final CANSparkMax hopperSpinBottom;
+    private final CANSparkMax hopperSpinTop;
+
+    private final DoubleSolenoid intake;
+
+    private final DigitalInput intakeGate;
     private final Pixy2 pixycam;
 
     private byte m_ballCount;
@@ -43,20 +49,22 @@ public class Hopper extends SubsystemBase {
      * Default constructor
      */
     public Hopper() {
-        intake = new VictorSPX(Constants.CAN.INTAKE);
         hopperHold = new VictorSPX(Constants.CAN.HOPPER_HOLD);
-        hopperLift = new Spark(Constants.CAN.HOPPER_LIFT);
-        hopperSpinBottom = new Spark(Constants.CAN.HOPPER_SPIN_BOTTOM);
-        hopperSpinTop = new Spark(Constants.CAN.HOPPER_SPIN_TOP);
+        hopperLift = new VictorSPX(Constants.CAN.HOPPER_LIFT);
+        hopperSpinBottom = new CANSparkMax(Constants.CAN.HOPPER_SPIN_BOTTOM, MotorType.kBrushless);
+        hopperSpinTop = new CANSparkMax(Constants.CAN.HOPPER_SPIN_TOP, MotorType.kBrushless);
 
-        intakeGate = new DigitalOutput(Constants.DIO.PHOTOGATE);
+        intake = new DoubleSolenoid(1, Constants.PNEUMATICS.FLIP_INTAKE_01,
+                Constants.PNEUMATICS.FLIP_INTAKE_02);
+
+        intakeGate = new DigitalInput(Constants.DIO.PHOTOGATE);
         pixycam = Pixy2.createInstance(new I2CLink());
         pixycam.init();
     }
 
     /**
      * Initializes the subsystem for use with the robot.
-     * 
+     *
      * @param robot
      *            The robot instance.
      */
@@ -72,9 +80,8 @@ public class Hopper extends SubsystemBase {
      */
     @Override
     public void disable() {
-        intake.set(ControlMode.PercentOutput, 0);
         hopperHold.set(ControlMode.PercentOutput, 0);
-        hopperLift.set(0);
+        hopperLift.set(ControlMode.PercentOutput, 0);
         hopperSpinBottom.set(0);
         hopperSpinTop.set(0);
     }
@@ -84,9 +91,8 @@ public class Hopper extends SubsystemBase {
      */
     @Override
     public void periodic() {
-        intake.set(ControlMode.PercentOutput, 0);
         hopperHold.set(ControlMode.PercentOutput, 0);
-        hopperLift.set(0);
+        hopperLift.set(ControlMode.PercentOutput, 0);
         hopperSpinBottom.set(0);
         hopperSpinTop.set(0);
     }
@@ -98,33 +104,54 @@ public class Hopper extends SubsystemBase {
     public void runHopper() {
         switch (m_ballCount) {
         case 1:
+            hopperSpinBottom.set(-PERCENT_OUTPUT);
+            hopperSpinTop.set(PERCENT_OUTPUT * 0.1);
         case 2:
-            hopperSpinBottom.set(1);
-            hopperSpinTop.set(1);
         case 3:
-            hopperLift.set(1);
+            hopperLift.set(ControlMode.PercentOutput, PERCENT_OUTPUT);
         case 4:
+            hopperHold.set(ControlMode.PercentOutput, -PERCENT_OUTPUT);
+            break;
         case 5:
-            hopperHold.set(ControlMode.PercentOutput, 1);
+            hopperHold.set(ControlMode.PercentOutput, 0);
             break;
         default:
-            hopperHold.set(ControlMode.PercentOutput, 0);
-            hopperLift.set(0);
+            hopperHold.set(ControlMode.PercentOutput, -PERCENT_OUTPUT);
+            hopperLift.set(ControlMode.PercentOutput, 0);
             hopperSpinBottom.set(0);
             hopperSpinTop.set(0);
             break;
         }
 
         if (System.currentTimeMillis() - removeStart < EJECT_TIME_MS) {
-            hopperSpinTop.set(1);
-            hopperSpinBottom.set(1);
+            hopperSpinTop.set(-PERCENT_OUTPUT);
+            hopperSpinBottom.set(-PERCENT_OUTPUT);
+            hopperHold.set(ControlMode.PercentOutput, -PERCENT_OUTPUT);
+            hopperLift.set(ControlMode.PercentOutput, PERCENT_OUTPUT);
         }
 
         if (intakeGate.get()) {
             if (blockTimeout + BLOCK_REFRESH < System.currentTimeMillis()) {
                 m_ballCount++;
+                System.out.println("Current Ballcount: " + m_ballCount);
             }
             blockTimeout = System.currentTimeMillis();
+        }
+    }
+
+    public void lowerIntake() {
+        intake.set(DoubleSolenoid.Value.kForward);
+    }
+
+    public void raiseIntake() {
+        intake.set(DoubleSolenoid.Value.kReverse);
+    }
+
+    public void toggleIntake() {
+        if (intake.get() == DoubleSolenoid.Value.kForward) {
+            intake.set(DoubleSolenoid.Value.kReverse);
+        } else {
+            intake.set(DoubleSolenoid.Value.kForward);
         }
     }
 
@@ -132,17 +159,17 @@ public class Hopper extends SubsystemBase {
      * Eject a ball from the subsystem, and deduct one ball from the counter.
      */
     public void removeBall() {
-        removeStart = (removeStart < System.currentTimeMillis()) ? System.currentTimeMillis()
-                : (removeStart + EJECT_TIME_MS);
+        removeStart = ((removeStart < System.currentTimeMillis()) ? System.currentTimeMillis()
+                : removeStart) + EJECT_TIME_MS;
         m_ballCount--;
-    }
-
-    public void runIntake() {
-        intake.set(ControlMode.PercentOutput, 1);
     }
 
     public byte ballCount() {
         return m_ballCount;
+    }
+
+    public void resetBallCount() {
+        m_ballCount = 0;
     }
 
     /**
@@ -176,7 +203,7 @@ public class Hopper extends SubsystemBase {
 
     /**
      * Gets the name of the subsystem as a String.
-     * 
+     *
      * @return Returns the name of the subsystem as a String. Always "Hopper".
      */
     @Override

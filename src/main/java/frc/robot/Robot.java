@@ -3,12 +3,14 @@ package frc.robot;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
-import frc.robot.command.AutoCommand;
-import frc.robot.dashboard.Dashboard;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.command.*;
 import frc.robot.subsystems.Hardware;
 
 /**
@@ -26,7 +28,9 @@ public class Robot extends TimedRobot {
     private LocalTime startTime = LocalTime.now();
 
     private Hardware hardware;
-    private Dashboard dashboard;
+
+    private Compressor compressor;
+    // private Dashboard dashboard;
 
     @Override
     public void robotInit() {
@@ -40,23 +44,35 @@ public class Robot extends TimedRobot {
         hardware.init(this);
         hardware.disable();
 
-        dashboard = new Dashboard(this);
+        new JoystickButton(Constants.Joysticks.aux, 1).whenPressed(new HopperLoopCommand());
+        new JoystickButton(Constants.Joysticks.aux, 2).whenPressed(new ShootCommand(1000));
+        new JoystickButton(Constants.Joysticks.aux, 3).whenPressed(new ShootSpinUp(3000));
+
+        new JoystickButton(Constants.Joysticks.drive, 3).whenPressed(new ToggleIntake());
+        new JoystickButton(Constants.Joysticks.drive, 4).whenPressed(new ToggleWheelSpin());
+
+        compressor = new Compressor(1);
+        compressor.setClosedLoopControl(true);
+        compressor.start();
+
+        // dashboard = new Dashboard(this);
     }
 
     @Override
     public void robotPeriodic() {
-        dashboard.update();
+        // dashboard.update();
     }
 
     @Override
     public void autonomousInit() {
         System.out.println("Auto Init!");
 
-        dashboard.autonomousInit();
+        // dashboard.autonomousInit();
         resetTime();
 
         CommandScheduler.getInstance().cancelAll();
         CommandScheduler.getInstance().schedule(new AutoCommand());
+        CommandScheduler.getInstance().schedule(new ParallelDeadlineGroup(new AutoCommand()));
     }
 
     @Override
@@ -68,17 +84,17 @@ public class Robot extends TimedRobot {
     public void teleopInit() {
         System.out.println("TeleOp Init!");
 
-        dashboard.teleopInit();
+        // dashboard.teleopInit();
         resetTime();
 
         CommandScheduler.getInstance().cancelAll();
-        // CommandScheduler.getInstance().schedule(new ButtonShootCommand());
+        Hardware.hopper.resetBallCount();
+        compressor.start();
+        CommandScheduler.getInstance().schedule(new HopperLoopCommand());
     }
 
     @Override
     public void teleopPeriodic() {
-        Hardware.hopper.runHopper();
-        Hardware.wheelSpinner.run();
         CommandScheduler.getInstance().run();
     }
 
@@ -111,12 +127,12 @@ public class Robot extends TimedRobot {
         return ChronoUnit.SECONDS.between(startTime, LocalTime.now());
     }
 
-    /**
-     * @see frc.robot.dashboard.Dashboard
-     */
-    public Dashboard getDashboard() {
-        return dashboard;
-    }
+    // /**
+    // * @see frc.robot.dashboard.Dashboard
+    // */
+    // public Dashboard getDashboard() {
+    // return dashboard;
+    // }
 
     /**
      * @see frc.robot.subsystems.Hardware

@@ -39,7 +39,6 @@ public class AutoPickup extends CommandBase {
      */
     @Override
     public void execute() {
-        hopper.runIntake();
         Vector2d pos = hopper.ballPosition();
         double offset = (pos.x - Constants.PIXYCAM.CENTER_X) / Constants.PIXYCAM.CENTER_X;
 
